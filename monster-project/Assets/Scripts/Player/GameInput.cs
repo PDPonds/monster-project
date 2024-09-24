@@ -53,6 +53,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""76d692ad-8c3a-4d6a-bb04-bab25b52c8d7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +141,17 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4d678565-7b9a-404e-a333-a90ef0589463"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -143,6 +163,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_action_PlayerMoveInput = m_action.FindAction("PlayerMoveInput", throwIfNotFound: true);
         m_action_MousePos = m_action.FindAction("MousePos", throwIfNotFound: true);
         m_action_Aim = m_action.FindAction("Aim", throwIfNotFound: true);
+        m_action_ToggleInventory = m_action.FindAction("ToggleInventory", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -207,6 +228,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_action_PlayerMoveInput;
     private readonly InputAction m_action_MousePos;
     private readonly InputAction m_action_Aim;
+    private readonly InputAction m_action_ToggleInventory;
     public struct ActionActions
     {
         private @GameInput m_Wrapper;
@@ -214,6 +236,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @PlayerMoveInput => m_Wrapper.m_action_PlayerMoveInput;
         public InputAction @MousePos => m_Wrapper.m_action_MousePos;
         public InputAction @Aim => m_Wrapper.m_action_Aim;
+        public InputAction @ToggleInventory => m_Wrapper.m_action_ToggleInventory;
         public InputActionMap Get() { return m_Wrapper.m_action; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -232,6 +255,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
+            @ToggleInventory.started += instance.OnToggleInventory;
+            @ToggleInventory.performed += instance.OnToggleInventory;
+            @ToggleInventory.canceled += instance.OnToggleInventory;
         }
 
         private void UnregisterCallbacks(IActionActions instance)
@@ -245,6 +271,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
+            @ToggleInventory.started -= instance.OnToggleInventory;
+            @ToggleInventory.performed -= instance.OnToggleInventory;
+            @ToggleInventory.canceled -= instance.OnToggleInventory;
         }
 
         public void RemoveCallbacks(IActionActions instance)
@@ -267,5 +296,6 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnPlayerMoveInput(InputAction.CallbackContext context);
         void OnMousePos(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
+        void OnToggleInventory(InputAction.CallbackContext context);
     }
 }

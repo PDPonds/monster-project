@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class PlayerManager : MonoBehaviour
 {
     Rigidbody rb;
     CapsuleCollider col;
     Animator anim;
+    PlayerUI playerUI;
 
     #region Movement
 
@@ -24,11 +27,24 @@ public class PlayerManager : MonoBehaviour
 
     #endregion
 
+    #region Inventory
+    [Header("===== Inventory =====")]
+    public int inventoryWidth;
+    public int inventoryHeight;
+    public inventorySlot[,] slots;
+    #endregion
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         col = rb.GetComponent<CapsuleCollider>();
         anim = GetComponent<Animator>();
+        playerUI = GetComponent<PlayerUI>();
+    }
+
+    private void Start()
+    {
+        InitInventory();
     }
 
     private void Update()
@@ -153,4 +169,33 @@ public class PlayerManager : MonoBehaviour
         }
     }
     #endregion
+
+    #region Inventory
+
+    public void InitInventory()
+    {
+        slots = new inventorySlot[inventoryWidth, inventoryHeight];
+        for (int x = 0; x < inventoryWidth; x++)
+        {
+            for (int y = 0; y < inventoryHeight; y++)
+            {
+                GameObject slotUi = Instantiate(playerUI.inventorySlotObj, playerUI.inventoryParent);
+                inventorySlot slot = new inventorySlot(slotUi);
+                slots[x, y] = slot;
+            }
+        }
+    }
+
+    #endregion
+
+}
+
+[Serializable]
+public class inventorySlot
+{
+    public GameObject slotUI;
+    public inventorySlot(GameObject slotUI)
+    {
+        this.slotUI = slotUI;
+    }
 }

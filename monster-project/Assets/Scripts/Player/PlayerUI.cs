@@ -1,35 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PlayerUI : MonoBehaviour
+public class PlayerUI : Singleton<PlayerUI>
 {
-    PlayerManager playerManager;
 
     [Header("===== Inventory =====")]
-    public Transform inventoryParent;
+    [Header("- Toggle Show and Hide inventory")]
+    public Transform inventoryTab;
+
+    [Header("- Inventory UI")]
+    public Transform slotParent;
     public GameObject inventorySlotObj;
 
-    private void Awake()
-    {
-        playerManager = GetComponent<PlayerManager>();
-    }
+    [Header("- Item Obj")]
+    public Transform itemParent;
+    public GameObject itemObjPrefab;
+
+    [Header("Test")]
+    public ItemSO testItem;
+    [HideInInspector] public GameObject curItemObjSelected;
 
     #region Inventory
 
     public void ToggleInventory()
     {
-        if (inventoryParent.gameObject.activeSelf)
+        if (inventoryTab.gameObject.activeSelf)
         {
-            inventoryParent.gameObject.SetActive(false);
+            inventoryTab.gameObject.SetActive(false);
         }
         else
         {
-            inventoryParent.gameObject.SetActive(true);
+            inventoryTab.gameObject.SetActive(true);
         }
     }
 
+    public GameObject InitItemObj(ItemSO item)
+    {
+        GameObject obj = Instantiate(itemObjPrefab, itemParent);
+
+        ItemObj itemObj = obj.GetComponent<ItemObj>();
+        itemObj.item = item;
+
+        RectTransform rect = itemObj.visual.GetComponent<RectTransform>();
+        rect.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
+        rect.sizeDelta = new Vector2(item.itemGridWidth * 100, item.itemGridHeight * 100);
+
+        itemObj.visual.sprite = item.itemSprite;
+        return obj;
+    }
+
+    public bool HasItemObjSelected()
+    {
+        return curItemObjSelected != null;
+    }
 
     #endregion
+
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            InitItemObj(testItem);
+        }
+    }
 
 }

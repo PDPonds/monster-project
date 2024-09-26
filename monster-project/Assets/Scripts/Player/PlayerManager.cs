@@ -2,9 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : Singleton<PlayerManager>
 {
     Rigidbody rb;
     CapsuleCollider col;
@@ -31,7 +30,7 @@ public class PlayerManager : MonoBehaviour
     [Header("===== Inventory =====")]
     public int inventoryWidth;
     public int inventoryHeight;
-    public inventorySlot[,] slots;
+    Slot[,] slots;
     #endregion
 
     private void Awake()
@@ -52,6 +51,7 @@ public class PlayerManager : MonoBehaviour
         MoveHandle();
         RotationHandle();
         AnimHandle();
+
     }
 
     #region Mouse
@@ -128,14 +128,14 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            if(moveDir != Vector3.zero)
+            if (moveDir != Vector3.zero)
             {
                 Quaternion toRotation = Quaternion.LookRotation(moveDir, Vector3.up);
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, (rotationSpeed * 100) * Time.deltaTime);
 
                 var rotatedVector = transform.rotation * Vector3.forward;
             }
-            
+
         }
     }
 
@@ -158,7 +158,7 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            if(moveInput.magnitude > 0)
+            if (moveInput.magnitude > 0)
             {
                 anim.SetFloat("NoAimWalk", 1);
             }
@@ -172,15 +172,16 @@ public class PlayerManager : MonoBehaviour
 
     #region Inventory
 
-    public void InitInventory()
+    void InitInventory()
     {
-        slots = new inventorySlot[inventoryWidth, inventoryHeight];
+        slots = new Slot[inventoryWidth, inventoryHeight];
         for (int x = 0; x < inventoryWidth; x++)
         {
             for (int y = 0; y < inventoryHeight; y++)
             {
-                GameObject slotUi = Instantiate(playerUI.inventorySlotObj, playerUI.inventoryParent);
-                inventorySlot slot = new inventorySlot(slotUi);
+                GameObject slotObj = Instantiate(playerUI.inventorySlotObj, playerUI.slotParent);
+                SlotUI slotUi = slotObj.GetComponent<SlotUI>();
+                Slot slot = new Slot(slotUi , x , y);
                 slots[x, y] = slot;
             }
         }
@@ -191,11 +192,14 @@ public class PlayerManager : MonoBehaviour
 }
 
 [Serializable]
-public class inventorySlot
+public class Slot
 {
-    public GameObject slotUI;
-    public inventorySlot(GameObject slotUI)
+    public SlotUI slotUI;
+    public Slot(SlotUI slotUI , int x ,int y)
     {
         this.slotUI = slotUI;
+        this.slotUI.x = x;
+        this.slotUI.y = y;
     }
+
 }

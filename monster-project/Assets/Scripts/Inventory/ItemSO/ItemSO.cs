@@ -11,7 +11,7 @@ public enum ItemType
 public class ItemSO : ScriptableObject
 {
     public string itemName;
-    public Image itemSprite;
+    public Sprite itemSprite;
     public int itemGridWidth;
     public int itemGridHeight;
     public ItemType itemType;

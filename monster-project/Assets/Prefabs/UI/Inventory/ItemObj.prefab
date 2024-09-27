@@ -60,6 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   item: {fileID: 0}
   amount: 0
+  pressSlots: []
   visual: {fileID: 9208660098786474475}
 --- !u!1 &8928713313719127094
 GameObject:

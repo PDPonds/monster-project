@@ -16,6 +16,8 @@ public class ItemObj : MonoBehaviour
 
     bool isSelected;
 
+    [HideInInspector] public bool isRotate;
+
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -52,13 +54,36 @@ public class ItemObj : MonoBehaviour
         isSelected = false;
         rectTransform.anchoredPosition = pressSlot.GetButtonLeftPosition();
         visual.rectTransform.sizeDelta = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100;
-        visual.rectTransform.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
-        pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridWidth, item.itemGridHeight);
+        if (!isRotate)
+        {
+            visual.rectTransform.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
+            pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridWidth, item.itemGridHeight);
+        }
+        else
+        {
+            visual.rectTransform.anchoredPosition = new Vector2(item.itemGridHeight, item.itemGridWidth) * 100 / 2;
+            pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridHeight, item.itemGridWidth);
+        }
+
         for (int i = 0; i < pressSlots.Count; i++)
         {
             pressSlots[i].hasItem = true;
         }
         PlayerUI.Instance.curItemObjSelected = null;
+    }
+
+    public void RotateOnSelected()
+    {
+        isRotate = !isRotate;
+        if (isRotate)
+        {
+            visual.rectTransform.localRotation = Quaternion.Euler(0, 0, 90);
+        }
+        else
+        {
+            visual.rectTransform.localRotation = Quaternion.Euler(0, 0, 0);
+        }
+
     }
 
 }

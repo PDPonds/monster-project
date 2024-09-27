@@ -20,6 +20,20 @@ public class SlotUI : MonoBehaviour
         button.onClick.AddListener(TryPressObject);
     }
 
+    private void Update()
+    {
+        if (hasItem)
+        {
+            Image img = GetComponent<Image>();
+            img.color = Color.red;
+        }
+        else
+        {
+            Image img = GetComponent<Image>();
+            img.color = Color.gray;
+        }
+    }
+
     public Vector2 GetCenterPosition()
     {
         return rectTransform.localPosition;
@@ -48,10 +62,12 @@ public class SlotUI : MonoBehaviour
 
     public bool CanPress(ItemObj item)
     {
-        List<SlotUI> slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridWidth, item.item.itemGridHeight);
+        List<SlotUI> slots = new List<SlotUI>();
+        if (!item.isRotate) slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridWidth, item.item.itemGridHeight);
+        else slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridHeight, item.item.itemGridWidth);
 
         if (slots.Count != item.item.GetSlotSize()) return false;
-        
+
         if (slots.Count > 0)
         {
             for (int i = 0; i < slots.Count; i++)
@@ -62,7 +78,7 @@ public class SlotUI : MonoBehaviour
                 }
                 else
                 {
-                    if(slots[i].hasItem)
+                    if (slots[i].hasItem)
                     {
                         return false;
                     }

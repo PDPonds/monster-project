@@ -55,13 +55,22 @@ public class PlayerUI : Singleton<PlayerUI>
         }
         else
         {
-            Destroy(item);
+            Destroy(item.gameObject);
         }
     }
 
     public bool HasItemObjSelected()
     {
         return curItemObjSelected != null;
+    }
+
+    public void RotateSelectedObject()
+    {
+        if (HasItemObjSelected() && inventoryTab.gameObject.activeSelf)
+        {
+            ItemObj itemObj = curItemObjSelected.GetComponent<ItemObj>();
+            itemObj.RotateOnSelected();
+        }
     }
 
     #endregion

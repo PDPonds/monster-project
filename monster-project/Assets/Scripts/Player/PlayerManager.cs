@@ -217,7 +217,6 @@ public class PlayerManager : Singleton<PlayerManager>
                 int yGrid = firstSlot.y - y;
                 if (IsSlotNotOutOfInventorySlot(xGrid, yGrid))
                 {
-
                     SlotUI near = GetSlot(firstSlot.x + x, firstSlot.y - y);
                     slots.Add(near);
                 }

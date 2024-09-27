@@ -181,10 +181,55 @@ public class PlayerManager : Singleton<PlayerManager>
             {
                 GameObject slotObj = Instantiate(playerUI.inventorySlotObj, playerUI.slotParent);
                 SlotUI slotUi = slotObj.GetComponent<SlotUI>();
-                Slot slot = new Slot(slotUi , x , y);
+                Slot slot = new Slot(slotUi, x, y);
                 slots[x, y] = slot;
             }
         }
+    }
+
+    public SlotUI GetSlot(int x, int y)
+    {
+        if (IsSlotNotOutOfInventorySlot(x, y))
+        {
+            for (int i = 0; i < PlayerUI.Instance.slotParent.childCount; i++)
+            {
+                GameObject obj = PlayerUI.Instance.slotParent.GetChild(i).gameObject;
+                SlotUI slotUi = obj.GetComponent<SlotUI>();
+                if (slotUi.x == x && slotUi.y == y)
+                {
+                    return slotUi;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<SlotUI> GetSlot(SlotUI firstSlot, int width, int height)
+    {
+        List<SlotUI> slots = new List<SlotUI>();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int xGrid = firstSlot.x + x;
+                int yGrid = firstSlot.y - y;
+                if (IsSlotNotOutOfInventorySlot(xGrid, yGrid))
+                {
+
+                    SlotUI near = GetSlot(firstSlot.x + x, firstSlot.y - y);
+                    slots.Add(near);
+                }
+            }
+        }
+
+        return slots;
+    }
+
+    public bool IsSlotNotOutOfInventorySlot(int x, int y)
+    {
+        return (x >= 0 && y >= 0 && x < inventoryWidth && y < inventoryHeight);
     }
 
     #endregion
@@ -195,7 +240,7 @@ public class PlayerManager : Singleton<PlayerManager>
 public class Slot
 {
     public SlotUI slotUI;
-    public Slot(SlotUI slotUI , int x ,int y)
+    public Slot(SlotUI slotUI, int x, int y)
     {
         this.slotUI = slotUI;
         this.slotUI.x = x;

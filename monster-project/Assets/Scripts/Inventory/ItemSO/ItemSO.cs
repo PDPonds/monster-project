@@ -15,4 +15,10 @@ public class ItemSO : ScriptableObject
     public int itemGridWidth;
     public int itemGridHeight;
     public ItemType itemType;
+
+    public int GetSlotSize()
+    {
+        return itemGridWidth * itemGridHeight;
+    }
+
 }

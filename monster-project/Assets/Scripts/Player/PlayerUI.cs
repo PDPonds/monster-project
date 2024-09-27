@@ -42,13 +42,21 @@ public class PlayerUI : Singleton<PlayerUI>
 
         ItemObj itemObj = obj.GetComponent<ItemObj>();
         itemObj.item = item;
-
-        RectTransform rect = itemObj.visual.GetComponent<RectTransform>();
-        rect.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
-        rect.sizeDelta = new Vector2(item.itemGridWidth * 100, item.itemGridHeight * 100);
-
         itemObj.visual.sprite = item.itemSprite;
+
         return obj;
+    }
+
+    public void SpawnItem(ItemObj item, SlotUI pressPos)
+    {
+        if (pressPos.CanPress(item))
+        {
+            item.UnSelected(pressPos);
+        }
+        else
+        {
+            Destroy(item);
+        }
     }
 
     public bool HasItemObjSelected()
@@ -62,7 +70,8 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         if (Input.GetKeyUp(KeyCode.A))
         {
-            InitItemObj(testItem);
+            GameObject item = InitItemObj(testItem);
+            SpawnItem(item.GetComponent<ItemObj>(), PlayerManager.Instance.GetSlot(0, 1));
         }
     }
 

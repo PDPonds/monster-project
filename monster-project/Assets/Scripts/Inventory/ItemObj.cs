@@ -8,6 +8,8 @@ public class ItemObj : MonoBehaviour
     [HideInInspector] public ItemSO item;
     [HideInInspector] public int amount;
 
+    [HideInInspector] public List<SlotUI> pressSlots;
+
     Button button;
     RectTransform rectTransform;
     public Image visual;
@@ -36,15 +38,26 @@ public class ItemObj : MonoBehaviour
         {
             visual.raycastTarget = false;
             isSelected = true;
+            for (int i = 0; i < pressSlots.Count; i++)
+            {
+                pressSlots[i].hasItem = false;
+            }
             PlayerUI.Instance.curItemObjSelected = gameObject;
         }
     }
 
-    public void UnSelected(Vector2 dropPos)
+    public void UnSelected(SlotUI pressSlot)
     {
         visual.raycastTarget = true;
         isSelected = false;
-        rectTransform.anchoredPosition = dropPos;
+        rectTransform.anchoredPosition = pressSlot.GetButtonLeftPosition();
+        visual.rectTransform.sizeDelta = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100;
+        visual.rectTransform.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
+        pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridWidth, item.itemGridHeight);
+        for (int i = 0; i < pressSlots.Count; i++)
+        {
+            pressSlots[i].hasItem = true;
+        }
         PlayerUI.Instance.curItemObjSelected = null;
     }
 

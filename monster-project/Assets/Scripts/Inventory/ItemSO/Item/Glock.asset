@@ -14,10 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Glock
   itemSprite: {fileID: 21300000, guid: 677a79ef41ec8054b9c118f78288d0ca, type: 3}
-  itemGridWidth: 2
+  itemGridWidth: 3
   itemGridHeight: 2
-  slotPrefabs: {fileID: 2278232916580247033, guid: 52f82edeb5d8bde4885a8bcff8921bd4,
-    type: 3}
   itemType: 0
   usableItemType: 0
   weaponType: 0

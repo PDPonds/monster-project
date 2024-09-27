@@ -38,10 +38,38 @@ public class SlotUI : MonoBehaviour
     {
         if (PlayerUI.Instance.HasItemObjSelected())
         {
-            ItemObj itemObj = PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>();
-            itemObj.UnSelected(GetButtonLeftPosition());
+            if (CanPress(PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>()))
+            {
+                ItemObj itemObj = PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>();
+                itemObj.UnSelected(this);
+            }
         }
     }
 
+    public bool CanPress(ItemObj item)
+    {
+        List<SlotUI> slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridWidth, item.item.itemGridHeight);
+
+        if (slots.Count != item.item.GetSlotSize()) return false;
+        
+        if (slots.Count > 0)
+        {
+            for (int i = 0; i < slots.Count; i++)
+            {
+                if (!PlayerManager.Instance.IsSlotNotOutOfInventorySlot(slots[i].x, slots[i].y))
+                {
+                    return false;
+                }
+                else
+                {
+                    if(slots[i].hasItem)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
 }

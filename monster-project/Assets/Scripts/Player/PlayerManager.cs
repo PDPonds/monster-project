@@ -30,7 +30,7 @@ public class PlayerManager : Singleton<PlayerManager>
     [Header("===== Inventory =====")]
     public int inventoryWidth;
     public int inventoryHeight;
-    Slot[,] slots;
+    SlotNode[,] slots;
     #endregion
 
     private void Awake()
@@ -174,14 +174,15 @@ public class PlayerManager : Singleton<PlayerManager>
 
     void InitInventory()
     {
-        slots = new Slot[inventoryWidth, inventoryHeight];
+        slots = new SlotNode[inventoryWidth, inventoryHeight];
         for (int x = 0; x < inventoryWidth; x++)
         {
             for (int y = 0; y < inventoryHeight; y++)
             {
                 GameObject slotObj = Instantiate(playerUI.inventorySlotObj, playerUI.slotParent);
                 SlotUI slotUi = slotObj.GetComponent<SlotUI>();
-                Slot slot = new Slot(slotUi, x, y);
+                slotUi.itemParent = PlayerUI.Instance.itemParent;
+                SlotNode slot = new SlotNode(slotUi, x, y);
                 slots[x, y] = slot;
             }
         }
@@ -231,19 +232,46 @@ public class PlayerManager : Singleton<PlayerManager>
         return (x >= 0 && y >= 0 && x < inventoryWidth && y < inventoryHeight);
     }
 
-    #endregion
+    public List<Slot> GetItemInInventory()
+    {
+        List<Slot> slots = new List<Slot>();
 
+        if (PlayerUI.Instance.itemParent.childCount > 0)
+        {
+            for (int i = 0; i < PlayerUI.Instance.itemParent.childCount; i++)
+            {
+                GameObject itemUI = PlayerUI.Instance.itemParent.GetChild(i).gameObject;
+                ItemObj itemObj = itemUI.GetComponent<ItemObj>();
+                Slot slot = new Slot();
+                slot.item = itemObj.item;
+                slot.amount = itemObj.amount;
+                slots.Add(slot);
+            }
+
+        }
+        return slots;
+    }
+
+    #endregion
 }
 
+
 [Serializable]
-public class Slot
+public class SlotNode
 {
     public SlotUI slotUI;
-    public Slot(SlotUI slotUI, int x, int y)
+    public SlotNode(SlotUI slotUI, int x, int y)
     {
         this.slotUI = slotUI;
         this.slotUI.x = x;
         this.slotUI.y = y;
     }
+}
+
+[Serializable]
+public class Slot
+{
+    public ItemSO item;
+    public int amount;
 
 }

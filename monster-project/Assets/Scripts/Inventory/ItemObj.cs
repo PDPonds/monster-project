@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,7 @@ public class ItemObj : MonoBehaviour
     Button button;
     RectTransform rectTransform;
     public Image visual;
+    public TextMeshProUGUI amountText;
 
     bool isSelected;
 
@@ -23,7 +25,7 @@ public class ItemObj : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         button = visual.GetComponent<Button>();
 
-        button.onClick.AddListener(SelectThisItem);
+        button.onClick.AddListener(OnClickThisItem);
     }
 
     private void Update()
@@ -34,11 +36,32 @@ public class ItemObj : MonoBehaviour
         }
     }
 
+    public void OnClickThisItem()
+    {
+        if (PlayerUI.Instance.HasItemObjSelected())
+        {
+            ItemObj itemObj = PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>();
+            if (item == itemObj.item)
+            {
+                if (amount < item.maxStack)
+                {
+                    AddItemAmount();
+                    itemObj.RemoveItemAmount();
+                }
+            }
+        }
+        else
+        {
+            SelectThisItem();
+        }
+    }
+
     public void SelectThisItem()
     {
         if (!PlayerUI.Instance.HasItemObjSelected())
         {
             visual.raycastTarget = false;
+            amountText.raycastTarget = false;
             isSelected = true;
             for (int i = 0; i < pressSlots.Count; i++)
             {
@@ -51,6 +74,7 @@ public class ItemObj : MonoBehaviour
     public void UnSelected(SlotUI pressSlot)
     {
         visual.raycastTarget = true;
+        amountText.raycastTarget = true;
         isSelected = false;
         rectTransform.anchoredPosition = pressSlot.GetButtonLeftPosition();
         visual.rectTransform.sizeDelta = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100;
@@ -84,6 +108,33 @@ public class ItemObj : MonoBehaviour
             visual.rectTransform.localRotation = Quaternion.Euler(0, 0, 0);
         }
 
+    }
+
+    public void AddItemAmount()
+    {
+        amount++;
+        UpdateAmountText();
+    }
+
+    public void RemoveItemAmount()
+    {
+        amount--;
+        UpdateAmountText();
+        if (amount <= 0)
+        {
+            DestroyItem();
+        }
+    }
+
+    public void DestroyItem()
+    {
+        PlayerUI.Instance.curItemObjSelected = null;
+        Destroy(gameObject);
+    }
+
+    public void UpdateAmountText()
+    {
+        amountText.text = amount.ToString();
     }
 
 }

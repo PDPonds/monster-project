@@ -36,12 +36,14 @@ public class PlayerUI : Singleton<PlayerUI>
         }
     }
 
-    public GameObject InitItemObj(ItemSO item)
+    public GameObject InitItemObj(ItemSO item , int amount)
     {
         GameObject obj = Instantiate(itemObjPrefab, itemParent);
 
         ItemObj itemObj = obj.GetComponent<ItemObj>();
         itemObj.item = item;
+        itemObj.amount = amount;
+        itemObj.UpdateAmountText();
         itemObj.visual.sprite = item.itemSprite;
 
         return obj;
@@ -79,7 +81,7 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         if (Input.GetKeyUp(KeyCode.A))
         {
-            GameObject item = InitItemObj(testItem);
+            GameObject item = InitItemObj(testItem , 1);
             SpawnItem(item.GetComponent<ItemObj>(), PlayerManager.Instance.GetSlot(0, 1));
         }
     }

@@ -16,6 +16,7 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: 677a79ef41ec8054b9c118f78288d0ca, type: 3}
   itemGridWidth: 3
   itemGridHeight: 2
+  maxStack: 1
   itemType: 0
   usableItemType: 0
   weaponType: 0

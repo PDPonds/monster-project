@@ -71,6 +71,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""9e35a0c7-7074-4a04-a91d-4f9f96f73da7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -172,6 +181,17 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""RotateOnSelect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""df49a6c8-aec9-4395-9733-f031743ec1e2"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -185,6 +205,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_action_Aim = m_action.FindAction("Aim", throwIfNotFound: true);
         m_action_ToggleInventory = m_action.FindAction("ToggleInventory", throwIfNotFound: true);
         m_action_RotateOnSelect = m_action.FindAction("RotateOnSelect", throwIfNotFound: true);
+        m_action_Interact = m_action.FindAction("Interact", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +272,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_action_Aim;
     private readonly InputAction m_action_ToggleInventory;
     private readonly InputAction m_action_RotateOnSelect;
+    private readonly InputAction m_action_Interact;
     public struct ActionActions
     {
         private @GameInput m_Wrapper;
@@ -260,6 +282,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @Aim => m_Wrapper.m_action_Aim;
         public InputAction @ToggleInventory => m_Wrapper.m_action_ToggleInventory;
         public InputAction @RotateOnSelect => m_Wrapper.m_action_RotateOnSelect;
+        public InputAction @Interact => m_Wrapper.m_action_Interact;
         public InputActionMap Get() { return m_Wrapper.m_action; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -284,6 +307,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @RotateOnSelect.started += instance.OnRotateOnSelect;
             @RotateOnSelect.performed += instance.OnRotateOnSelect;
             @RotateOnSelect.canceled += instance.OnRotateOnSelect;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
         }
 
         private void UnregisterCallbacks(IActionActions instance)
@@ -303,6 +329,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @RotateOnSelect.started -= instance.OnRotateOnSelect;
             @RotateOnSelect.performed -= instance.OnRotateOnSelect;
             @RotateOnSelect.canceled -= instance.OnRotateOnSelect;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
         }
 
         public void RemoveCallbacks(IActionActions instance)
@@ -327,5 +356,6 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnAim(InputAction.CallbackContext context);
         void OnToggleInventory(InputAction.CallbackContext context);
         void OnRotateOnSelect(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
     }
 }

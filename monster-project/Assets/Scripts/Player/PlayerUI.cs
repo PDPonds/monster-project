@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerUI : Singleton<PlayerUI>
 {
+    [Header("===== Interact =====")]
+    [SerializeField] GameObject interactCondition;
 
     [Header("===== Inventory =====")]
     [Header("- Toggle Show and Hide inventory")]
@@ -36,7 +38,7 @@ public class PlayerUI : Singleton<PlayerUI>
         }
     }
 
-    public GameObject InitItemObj(ItemSO item , int amount)
+    public GameObject InitItemObj(ItemSO item, int amount)
     {
         GameObject obj = Instantiate(itemObjPrefab, itemParent);
 
@@ -77,11 +79,25 @@ public class PlayerUI : Singleton<PlayerUI>
 
     #endregion
 
+    #region Interact
+
+    public void ShowInteractCondition()
+    {
+        interactCondition.SetActive(true);
+    }
+
+    public void HideInteractCondition()
+    {
+        interactCondition.SetActive(false);
+    }
+
+    #endregion
+
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.A))
+        if (Input.GetKeyUp(KeyCode.P))
         {
-            GameObject item = InitItemObj(testItem , 1);
+            GameObject item = InitItemObj(testItem, 1);
             SpawnItem(item.GetComponent<ItemObj>(), PlayerManager.Instance.GetSlot(0, 1));
         }
     }

@@ -33,6 +33,16 @@ public class PlayerManager : Singleton<PlayerManager>
     SlotNode[,] slots;
     #endregion
 
+    #region Interact
+
+    [Header("===== Interact =====")]
+    [SerializeField] float interactForwardOffset;
+    [SerializeField] float interactSize;
+    [SerializeField] LayerMask interactMask;
+    IInteracable curIInteractObject;
+
+    #endregion
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -51,7 +61,7 @@ public class PlayerManager : Singleton<PlayerManager>
         MoveHandle();
         RotationHandle();
         AnimHandle();
-
+        InteractHandle();
     }
 
     #region Mouse
@@ -253,6 +263,51 @@ public class PlayerManager : Singleton<PlayerManager>
     }
 
     #endregion
+
+    #region Interact
+
+    void InteractHandle()
+    {
+        Collider[] cols = Physics.OverlapSphere(transform.position + transform.forward * interactForwardOffset, interactSize, interactMask);
+        if (cols.Length > 0)
+        {
+            if (cols[0].TryGetComponent<IInteracable>(out IInteracable interacable))
+            {
+                if (curIInteractObject == null)
+                {
+                    PlayerUI.Instance.ShowInteractCondition();
+                    curIInteractObject = interacable;
+                }
+            }
+            else
+            {
+                PlayerUI.Instance.HideInteractCondition();
+                curIInteractObject = null;
+            }
+        }
+        else
+        {
+            PlayerUI.Instance.HideInteractCondition();
+            curIInteractObject = null;
+        }
+    }
+
+    public void InteractClick()
+    {
+        if (curIInteractObject != null)
+        {
+            curIInteractObject.Interact();
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position + transform.forward * interactForwardOffset, interactSize);
+    }
+
+    #endregion
+
 }
 
 

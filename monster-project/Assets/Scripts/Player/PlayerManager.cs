@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerManager : Singleton<PlayerManager>
 {
@@ -185,6 +186,9 @@ public class PlayerManager : Singleton<PlayerManager>
     void InitInventory()
     {
         slots = new SlotNode[inventoryWidth, inventoryHeight];
+        GridLayoutGroup gridLayout = playerUI.slotParent.GetComponent<GridLayoutGroup>();
+        gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        gridLayout.constraintCount = inventoryWidth;
         for (int x = 0; x < inventoryWidth; x++)
         {
             for (int y = 0; y < inventoryHeight; y++)

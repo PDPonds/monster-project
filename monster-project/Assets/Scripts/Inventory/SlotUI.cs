@@ -44,8 +44,8 @@ public class SlotUI : MonoBehaviour
     public Vector2 GetButtonLeftPosition()
     {
         Vector2 center = GetCenterPosition();
-        float width = rectTransform.rect.width;
-        float height = rectTransform.rect.height;
+        float width = rectTransform.rect.size.x;
+        float height = rectTransform.rect.size.y;
         Vector2 buttonLeft = new Vector2(center.x - (width / 2), center.y - (height / 2));
         return buttonLeft;
     }
@@ -60,6 +60,7 @@ public class SlotUI : MonoBehaviour
                 itemObj.UnSelected(this);
             }
         }
+
     }
 
     public bool CanPress(ItemObj item)

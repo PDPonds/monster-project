@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Storage : MonoBehaviour, IInteracable
 {
+    [Header("===== Inventory =====")]
+    public int inventoryWidth;
+    public int inventoryHeight;
 
     public void Interact()
     {

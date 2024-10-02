@@ -8,7 +8,7 @@ public class SlotUI : MonoBehaviour
     RectTransform rectTransform;
     Button button;
 
-    [HideInInspector] public Transform itemParent;
+    //[HideInInspector] public Transform itemParent;
 
     [HideInInspector] public int x;
     [HideInInspector] public int y;
@@ -38,7 +38,7 @@ public class SlotUI : MonoBehaviour
 
     public Vector2 GetCenterPosition()
     {
-        return rectTransform.localPosition;
+        return rectTransform.anchoredPosition; 
     }
 
     public Vector2 GetButtonLeftPosition()
@@ -66,8 +66,8 @@ public class SlotUI : MonoBehaviour
     public bool CanPress(ItemObj item)
     {
         List<SlotUI> slots = new List<SlotUI>();
-        if (!item.isRotate) slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridWidth, item.item.itemGridHeight);
-        else slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridHeight, item.item.itemGridWidth);
+        if (!item.isRotate) slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridWidth, item.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
+        else slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridHeight, item.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
 
         if (slots.Count != item.item.GetSlotSize()) return false;
 

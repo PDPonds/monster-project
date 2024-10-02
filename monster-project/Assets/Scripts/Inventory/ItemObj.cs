@@ -81,12 +81,12 @@ public class ItemObj : MonoBehaviour
         if (!isRotate)
         {
             visual.rectTransform.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
-            pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridWidth, item.itemGridHeight);
+            pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridWidth, item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
         }
         else
         {
             visual.rectTransform.anchoredPosition = new Vector2(item.itemGridHeight, item.itemGridWidth) * 100 / 2;
-            pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridHeight, item.itemGridWidth);
+            pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridHeight, item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
         }
 
         for (int i = 0; i < pressSlots.Count; i++)

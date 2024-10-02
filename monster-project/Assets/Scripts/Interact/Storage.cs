@@ -10,8 +10,10 @@ public class Storage : MonoBehaviour, IInteracable
 
     public void Interact()
     {
-        Debug.Log("Open Storage");
+        PlayerUI.Instance.inventoryTab.gameObject.SetActive(true);
+        PlayerUI.Instance.storageTab.gameObject.SetActive(true);
+
     }
 
-    
+
 }

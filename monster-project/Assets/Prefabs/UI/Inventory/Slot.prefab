@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6574053941245157763}
   - component: {fileID: -1751748271925323608}
   m_Layer: 3
-  m_Name: InventorySlot
+  m_Name: Slot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &361849818021813132
 CanvasRenderer:
@@ -133,5 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47e69aeff7b548f479d68adf6fc8eb52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemParent: {fileID: 0}
   x: 0
   y: 0
+  hasItem: 0

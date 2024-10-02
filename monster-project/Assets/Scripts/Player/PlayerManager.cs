@@ -4,12 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum PlayerPhase
+{
+    Normal, UIShow
+}
+
 public class PlayerManager : Singleton<PlayerManager>
 {
     Rigidbody rb;
     CapsuleCollider col;
     Animator anim;
-    PlayerUI playerUI;
+
+    #region Phase
+    PlayerPhase phase;
+    #endregion
 
     #region Movement
 
@@ -49,12 +57,11 @@ public class PlayerManager : Singleton<PlayerManager>
         rb = GetComponent<Rigidbody>();
         col = rb.GetComponent<CapsuleCollider>();
         anim = GetComponent<Animator>();
-        playerUI = GetComponent<PlayerUI>();
     }
 
     private void Start()
     {
-        InitInventory();
+        slots = PlayerUI.Instance.InitSlot(inventoryWidth, inventoryHeight, PlayerUI.Instance.slotParent.transform, PlayerUI.Instance.itemParent.transform);
     }
 
     private void Update()
@@ -63,6 +70,7 @@ public class PlayerManager : Singleton<PlayerManager>
         RotationHandle();
         AnimHandle();
         InteractHandle();
+        UpdatePhase();
     }
 
     #region Mouse
@@ -183,32 +191,13 @@ public class PlayerManager : Singleton<PlayerManager>
 
     #region Inventory
 
-    void InitInventory()
-    {
-        slots = new SlotNode[inventoryWidth, inventoryHeight];
-        GridLayoutGroup gridLayout = playerUI.slotParent.GetComponent<GridLayoutGroup>();
-        gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        gridLayout.constraintCount = inventoryWidth;
-        for (int x = 0; x < inventoryWidth; x++)
-        {
-            for (int y = 0; y < inventoryHeight; y++)
-            {
-                GameObject slotObj = Instantiate(playerUI.inventorySlotObj, playerUI.slotParent);
-                SlotUI slotUi = slotObj.GetComponent<SlotUI>();
-                slotUi.itemParent = PlayerUI.Instance.itemParent;
-                SlotNode slot = new SlotNode(slotUi, x, y);
-                slots[x, y] = slot;
-            }
-        }
-    }
-
-    public SlotUI GetSlot(int x, int y)
+    public SlotUI GetSlot(int x, int y, Transform slot)
     {
         if (IsSlotNotOutOfInventorySlot(x, y))
         {
-            for (int i = 0; i < PlayerUI.Instance.slotParent.childCount; i++)
+            for (int i = 0; i < slot.childCount; i++)
             {
-                GameObject obj = PlayerUI.Instance.slotParent.GetChild(i).gameObject;
+                GameObject obj = slot.GetChild(i).gameObject;
                 SlotUI slotUi = obj.GetComponent<SlotUI>();
                 if (slotUi.x == x && slotUi.y == y)
                 {
@@ -220,7 +209,7 @@ public class PlayerManager : Singleton<PlayerManager>
         return null;
     }
 
-    public List<SlotUI> GetSlot(SlotUI firstSlot, int width, int height)
+    public List<SlotUI> GetSlot(SlotUI firstSlot, int width, int height, Transform slot)
     {
         List<SlotUI> slots = new List<SlotUI>();
 
@@ -229,10 +218,10 @@ public class PlayerManager : Singleton<PlayerManager>
             for (int y = 0; y < height; y++)
             {
                 int xGrid = firstSlot.x + x;
-                int yGrid = firstSlot.y - y;
+                int yGrid = firstSlot.y + y;
                 if (IsSlotNotOutOfInventorySlot(xGrid, yGrid))
                 {
-                    SlotUI near = GetSlot(firstSlot.x + x, firstSlot.y - y);
+                    SlotUI near = GetSlot(firstSlot.x + x, firstSlot.y + y, slot);
                     slots.Add(near);
                 }
             }
@@ -308,6 +297,38 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position + transform.forward * interactForwardOffset, interactSize);
+    }
+
+    #endregion
+
+    #region Phase
+
+    public void SwitchPhase(PlayerPhase phase)
+    {
+        this.phase = phase;
+        switch (phase)
+        {
+            case PlayerPhase.Normal:
+                break;
+            case PlayerPhase.UIShow:
+                break;
+        }
+    }
+
+    void UpdatePhase()
+    {
+        switch (phase)
+        {
+            case PlayerPhase.Normal:
+                break;
+            case PlayerPhase.UIShow:
+                break;
+        }
+    }
+
+    public bool IsPhase(PlayerPhase phase)
+    {
+        return this.phase == phase;
     }
 
     #endregion

@@ -8,8 +8,6 @@ public class SlotUI : MonoBehaviour
     RectTransform rectTransform;
     Button button;
 
-    //[HideInInspector] public Transform itemParent;
-
     [HideInInspector] public int x;
     [HideInInspector] public int y;
     [HideInInspector] public bool hasItem;

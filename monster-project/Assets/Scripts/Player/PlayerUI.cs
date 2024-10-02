@@ -20,14 +20,6 @@ public class PlayerUI : Singleton<PlayerUI>
     [Header("- Item Obj")]
     public Transform itemParent;
 
-    [Header("===== Storage =====")]
-    [Header("- Toggle Show and Hide storage")]
-    public Transform storageTab;
-    [Header("- Item Obj")]
-    public Transform storageParent;
-    [Header("- Storage UI")]
-    public Transform storageItemParent;
-
     [Header("Test")]
     public ItemSO testItem;
     [HideInInspector] public GameObject curItemObjSelected;
@@ -56,6 +48,12 @@ public class PlayerUI : Singleton<PlayerUI>
         return slots;
     }
 
+    public void ClearSlot(Transform parent, Transform itemParent)
+    {
+        if (parent.childCount > 0) for (int x = 0; x < parent.childCount; x++) Destroy(parent.GetChild(x).gameObject);
+        if (itemParent.childCount > 0) for (int x = 0; x < itemParent.childCount; x++) Destroy(itemParent.GetChild(x).gameObject);
+    }
+
     #region Inventory
 
     public void ToggleInventory()
@@ -63,11 +61,12 @@ public class PlayerUI : Singleton<PlayerUI>
         if (inventoryTab.gameObject.activeSelf)
         {
             inventoryTab.gameObject.SetActive(false);
-            storageTab.gameObject.SetActive(false);
+            PlayerManager.Instance.SwitchPhase(PlayerPhase.Normal);
         }
         else
         {
             inventoryTab.gameObject.SetActive(true);
+            PlayerManager.Instance.SwitchPhase(PlayerPhase.UIShow);
         }
     }
 

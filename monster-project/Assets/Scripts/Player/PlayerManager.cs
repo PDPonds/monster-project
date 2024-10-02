@@ -11,7 +11,7 @@ public enum PlayerPhase
 
 public class PlayerManager : Singleton<PlayerManager>
 {
-    Rigidbody rb;
+    [HideInInspector] public Rigidbody rb;
     CapsuleCollider col;
     Animator anim;
 
@@ -39,7 +39,7 @@ public class PlayerManager : Singleton<PlayerManager>
     [Header("===== Inventory =====")]
     public int inventoryWidth;
     public int inventoryHeight;
-    SlotNode[,] slots;
+    [HideInInspector] public SlotNode[,] inventorySlots;
     #endregion
 
     #region Interact
@@ -61,7 +61,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private void Start()
     {
-        slots = PlayerUI.Instance.InitSlot(inventoryWidth, inventoryHeight, PlayerUI.Instance.slotParent.transform, PlayerUI.Instance.itemParent.transform);
+        inventorySlots = PlayerUI.Instance.InitSlot(inventoryWidth, inventoryHeight, PlayerUI.Instance.slotParent.transform, PlayerUI.Instance.itemParent.transform);
     }
 
     private void Update()
@@ -121,11 +121,18 @@ public class PlayerManager : Singleton<PlayerManager>
 
     void MoveHandle()
     {
-        moveDir = Camera.main.transform.forward * moveInput.y;
-        moveDir = moveDir + Camera.main.transform.right * moveInput.x;
-        moveDir.Normalize();
-        moveDir.y = 0;
-        moveDir = moveDir * moveSpeed;
+        if (CanMove())
+        {
+            moveDir = Camera.main.transform.forward * moveInput.y;
+            moveDir = moveDir + Camera.main.transform.right * moveInput.x;
+            moveDir.Normalize();
+            moveDir.y = 0;
+            moveDir = moveDir * moveSpeed;
+        }
+        else
+        {
+            moveDir = Vector3.zero;
+        }
 
         rb.velocity = new Vector3(moveDir.x, rb.velocity.y, moveDir.z);
 
@@ -160,33 +167,48 @@ public class PlayerManager : Singleton<PlayerManager>
 
     void AnimHandle()
     {
-        if (isAim)
+        if (CanMove())
         {
-            float forwardBackwardsMagnitude = 0;
-            float rightLeftMagnitude = 0;
-            if (moveInput.magnitude > 0)
+            if (isAim)
             {
-                Vector3 lookingDir = GetDirToMouse();
-                if (lookingDir == Vector3.zero) lookingDir = transform.forward;
-                forwardBackwardsMagnitude = Mathf.Clamp(Vector3.Dot(new Vector3(moveInput.x, 0, moveInput.y), lookingDir), -1, 1);
-                Vector3 perpendicularLookingAt = new Vector3(lookingDir.z, 0, -lookingDir.x);
-                rightLeftMagnitude = Mathf.Clamp(Vector3.Dot(new Vector3(moveInput.x, 0, moveInput.y), perpendicularLookingAt), -1, 1);
-            }
-            anim.SetFloat("z", forwardBackwardsMagnitude);
-            anim.SetFloat("x", rightLeftMagnitude);
-        }
-        else
-        {
-            if (moveInput.magnitude > 0)
-            {
-                anim.SetFloat("NoAimWalk", 1);
+                float forwardBackwardsMagnitude = 0;
+                float rightLeftMagnitude = 0;
+                if (moveInput.magnitude > 0)
+                {
+                    Vector3 lookingDir = GetDirToMouse();
+                    if (lookingDir == Vector3.zero) lookingDir = transform.forward;
+                    forwardBackwardsMagnitude = Mathf.Clamp(Vector3.Dot(new Vector3(moveInput.x, 0, moveInput.y), lookingDir), -1, 1);
+                    Vector3 perpendicularLookingAt = new Vector3(lookingDir.z, 0, -lookingDir.x);
+                    rightLeftMagnitude = Mathf.Clamp(Vector3.Dot(new Vector3(moveInput.x, 0, moveInput.y), perpendicularLookingAt), -1, 1);
+                }
+                anim.SetFloat("z", forwardBackwardsMagnitude);
+                anim.SetFloat("x", rightLeftMagnitude);
             }
             else
             {
-                anim.SetFloat("NoAimWalk", 0);
+                if (moveInput.magnitude > 0)
+                {
+                    anim.SetFloat("NoAimWalk", 1);
+                }
+                else
+                {
+                    anim.SetFloat("NoAimWalk", 0);
+                }
             }
         }
+        else
+        {
+            anim.SetFloat("z", 0);
+            anim.SetFloat("x", 0);
+            anim.SetFloat("NoAimWalk", 0);
+        }
     }
+
+    bool CanMove()
+    {
+        return !IsPhase(PlayerPhase.UIShow);
+    }
+
     #endregion
 
     #region Inventory

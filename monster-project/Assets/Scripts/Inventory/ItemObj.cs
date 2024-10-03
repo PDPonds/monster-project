@@ -10,6 +10,7 @@ public class ItemObj : MonoBehaviour
     [HideInInspector] public int amount;
 
     [HideInInspector] public List<SlotUI> pressSlots;
+    [HideInInspector] public HandSlotUI handSlot;
 
     Button button;
     [SerializeField] RectTransform rectTransform;
@@ -62,10 +63,25 @@ public class ItemObj : MonoBehaviour
             visual.raycastTarget = false;
             amountText.raycastTarget = false;
             isSelected = true;
-            for (int i = 0; i < pressSlots.Count; i++)
+
+            Rotate(false);
+            visual.rectTransform.sizeDelta = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100;
+            visual.rectTransform.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
+
+            if (pressSlots.Count > 0)
             {
-                pressSlots[i].hasItem = false;
+                for (int i = 0; i < pressSlots.Count; i++)
+                {
+                    pressSlots[i].hasItem = false;
+                }
             }
+            pressSlots.Clear();
+            if (handSlot != null)
+            {
+                handSlot.hasItem = false;
+                handSlot = null;
+            }
+
             PlayerUI.Instance.curItemObjSelected = gameObject;
         }
     }
@@ -95,10 +111,37 @@ public class ItemObj : MonoBehaviour
         PlayerUI.Instance.curItemObjSelected = null;
     }
 
-    public void RotateOnSelected()
+    public void UnSelected(HandSlotUI handSlot)
+    {
+        visual.raycastTarget = true;
+        amountText.raycastTarget = true;
+        isSelected = false;
+        rectTransform.anchoredPosition = handSlot.GetButtonLeftPosition();
+        visual.rectTransform.sizeDelta = new Vector2(handSlot.rectTransform.rect.width, handSlot.rectTransform.rect.height);
+        visual.rectTransform.anchoredPosition = new Vector2(handSlot.rectTransform.rect.width, handSlot.rectTransform.rect.height) / 2;
+        handSlot.hasItem = true;
+        this.handSlot = handSlot;
+        PlayerUI.Instance.curItemObjSelected = null;
+    }
+
+    public void ToggleRotate()
     {
         isRotate = !isRotate;
         if (isRotate)
+        {
+            visual.rectTransform.localRotation = Quaternion.Euler(0, 0, 90);
+        }
+        else
+        {
+            visual.rectTransform.localRotation = Quaternion.Euler(0, 0, 0);
+        }
+
+    }
+
+    public void Rotate(bool isRotate)
+    {
+        this.isRotate = isRotate;
+        if (this.isRotate)
         {
             visual.rectTransform.localRotation = Quaternion.Euler(0, 0, 90);
         }

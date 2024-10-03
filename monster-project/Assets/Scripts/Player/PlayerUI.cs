@@ -36,9 +36,10 @@ public class PlayerUI : Singleton<PlayerUI>
                 obj.transform.SetParent(parent, false);
                 RectTransform rect = obj.GetComponent<RectTransform>();
                 Vector2 size = new Vector2(rect.rect.width, rect.rect.height);
-                Vector2 origin = new Vector2(-size.x * width, -size.y * height) / 2;
+                float originX = ((float)(-size.x * (float)width) / 2f) + size.x / 2f;
+                float originY = ((float)(-size.y * (float)height) / 2f) + size.y / 2f;
+                Vector2 origin = new Vector2(originX, originY);
                 rect.anchoredPosition = new Vector3(x, y, 0) * size + origin;
-
                 SlotUI slotUi = obj.GetComponent<SlotUI>();
                 SlotNode slot = new SlotNode(slotUi, x, y);
                 slots[x, y] = slot;
@@ -101,7 +102,7 @@ public class PlayerUI : Singleton<PlayerUI>
             }
         }
 
-        itemObj.RotateOnSelected();
+        itemObj.ToggleRotate();
 
         for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
         {
@@ -131,7 +132,7 @@ public class PlayerUI : Singleton<PlayerUI>
         if (HasItemObjSelected() && inventoryTab.gameObject.activeSelf)
         {
             ItemObj itemObj = curItemObjSelected.GetComponent<ItemObj>();
-            itemObj.RotateOnSelected();
+            itemObj.ToggleRotate();
         }
     }
 
@@ -151,13 +152,5 @@ public class PlayerUI : Singleton<PlayerUI>
 
     #endregion
 
-
-    private void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.P))
-        {
-            TryAddItem(testItem, 1);
-        }
-    }
 
 }

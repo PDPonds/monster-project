@@ -19,4 +19,9 @@ public class ItemContainer : MonoBehaviour, IInteracable
         }
     }
 
+    public string InteractText()
+    {
+        return "[E] to Interact";
+    }
+
 }

@@ -36,7 +36,7 @@ public class SlotUI : MonoBehaviour
 
     public Vector2 GetCenterPosition()
     {
-        return rectTransform.anchoredPosition; 
+        return rectTransform.anchoredPosition;
     }
 
     public Vector2 GetButtonLeftPosition()
@@ -52,22 +52,25 @@ public class SlotUI : MonoBehaviour
     {
         if (PlayerUI.Instance.HasItemObjSelected())
         {
-            if (CanPress(PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>()))
+            ItemObj itemObj = PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>();
+            if (CanPress(PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>(), itemObj.isRotate))
             {
-                ItemObj itemObj = PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>();
                 itemObj.UnSelected(this);
             }
         }
 
     }
 
-    public bool CanPress(ItemObj item)
+    public bool CanPress(ItemObj item, bool isRotate)
     {
         List<SlotUI> slots = new List<SlotUI>();
-        if (!item.isRotate) slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridWidth, item.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
+        if (!isRotate) slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridWidth, item.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
         else slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridHeight, item.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
 
-        if (slots.Count != item.item.GetSlotSize()) return false;
+        if (slots.Count != item.item.GetSlotSize())
+        {
+            return false;
+        }
 
         if (slots.Count > 0)
         {

@@ -83,16 +83,42 @@ public class PlayerUI : Singleton<PlayerUI>
         return obj;
     }
 
-    public void SpawnItem(ItemObj item, SlotUI pressPos)
+    public bool TryAddItem(ItemSO item, int amount)
     {
-        if (pressPos.CanPress(item))
+        GameObject obj = InitItemObj(item, amount);
+        ItemObj itemObj = obj.GetComponent<ItemObj>();
+
+        for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
         {
-            item.UnSelected(pressPos);
+            for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
+            {
+                SlotUI pressPos = PlayerManager.Instance.GetSlot(x, y, slotParent.transform);
+                if (pressPos.CanPress(itemObj, itemObj.isRotate))
+                {
+                    itemObj.UnSelected(pressPos);
+                    return true;
+                }
+            }
         }
-        else
+
+        itemObj.RotateOnSelected();
+
+        for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
         {
-            Destroy(item.gameObject);
+            for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
+            {
+                SlotUI pressPos = PlayerManager.Instance.GetSlot(x, y, slotParent.transform);
+                if (pressPos.CanPress(itemObj, itemObj.isRotate))
+                {
+                    itemObj.UnSelected(pressPos);
+                    return true;
+                }
+            }
         }
+
+        Destroy(obj);
+        return false;
+
     }
 
     public bool HasItemObjSelected()
@@ -125,18 +151,12 @@ public class PlayerUI : Singleton<PlayerUI>
 
     #endregion
 
-    #region Storage
-
-
-
-    #endregion
 
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.P))
         {
-            GameObject item = InitItemObj(testItem, 1);
-            SpawnItem(item.GetComponent<ItemObj>(), PlayerManager.Instance.GetSlot(0, 1, slotParent.transform));
+            TryAddItem(testItem, 1);
         }
     }
 

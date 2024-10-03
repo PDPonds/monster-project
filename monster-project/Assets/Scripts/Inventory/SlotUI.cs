@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class SlotUI : MonoBehaviour
 {
-    RectTransform rectTransform;
+    [SerializeField] RectTransform rectTransform;
     Button button;
 
     [HideInInspector] public int x;
@@ -14,7 +14,6 @@ public class SlotUI : MonoBehaviour
 
     private void Awake()
     {
-        rectTransform = GetComponent<RectTransform>();
         button = GetComponent<Button>();
 
         button.onClick.AddListener(TryPressObject);

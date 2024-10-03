@@ -12,7 +12,7 @@ public class ItemObj : MonoBehaviour
     [HideInInspector] public List<SlotUI> pressSlots;
 
     Button button;
-    RectTransform rectTransform;
+    [SerializeField] RectTransform rectTransform;
     public Image visual;
     public TextMeshProUGUI amountText;
 
@@ -22,7 +22,6 @@ public class ItemObj : MonoBehaviour
 
     private void Awake()
     {
-        rectTransform = GetComponent<RectTransform>();
         button = visual.GetComponent<Button>();
 
         button.onClick.AddListener(OnClickThisItem);

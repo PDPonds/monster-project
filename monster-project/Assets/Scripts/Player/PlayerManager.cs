@@ -45,7 +45,7 @@ public class PlayerManager : Singleton<PlayerManager>
     #region Interact
 
     [Header("===== Interact =====")]
-    [SerializeField] float interactForwardOffset;
+    [SerializeField] Vector3 interactOffset;
     [SerializeField] float interactSize;
     [SerializeField] LayerMask interactMask;
     IInteracable curIInteractObject;
@@ -283,7 +283,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     void InteractHandle()
     {
-        Collider[] cols = Physics.OverlapSphere(transform.position + transform.forward * interactForwardOffset, interactSize, interactMask);
+        Collider[] cols = Physics.OverlapSphere(transform.position + interactOffset, interactSize, interactMask);
         if (cols.Length > 0)
         {
             if (cols[0].TryGetComponent<IInteracable>(out IInteracable interacable))
@@ -318,7 +318,7 @@ public class PlayerManager : Singleton<PlayerManager>
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + transform.forward * interactForwardOffset, interactSize);
+        Gizmos.DrawWireSphere(transform.position + interactOffset, interactSize);
     }
 
     #endregion

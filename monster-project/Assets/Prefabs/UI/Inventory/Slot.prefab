@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47e69aeff7b548f479d68adf6fc8eb52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemParent: {fileID: 0}
+  rectTransform: {fileID: 2635187640998597424}
   x: 0
   y: 0
   hasItem: 0

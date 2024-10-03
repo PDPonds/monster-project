@@ -195,6 +195,7 @@ MonoBehaviour:
   item: {fileID: 0}
   amount: 0
   pressSlots: []
+  rectTransform: {fileID: 3064886067868819517}
   visual: {fileID: 9208660098786474475}
   amountText: {fileID: 6263368261728832072}
   isRotate: 0

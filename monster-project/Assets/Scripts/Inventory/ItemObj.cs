@@ -9,7 +9,7 @@ public class ItemObj : MonoBehaviour
     public ItemObjData itemObjData = new ItemObjData();
 
     Button button;
-    [SerializeField] RectTransform rectTransform;
+    public RectTransform rectTransform;
     public Image visual;
     public TextMeshProUGUI amountText;
 
@@ -49,9 +49,15 @@ public class ItemObj : MonoBehaviour
         {
             SelectThisItem();
         }
+
+        if (PlayerManager.Instance.curStorage != null)
+        {
+            PlayerManager.Instance.curStorage.UpdateStorageData();
+        }
+
     }
 
-    public void SelectThisItem()
+    void SelectThisItem()
     {
         if (!PlayerUI.Instance.HasItemObjSelected())
         {
@@ -64,14 +70,29 @@ public class ItemObj : MonoBehaviour
             visual.rectTransform.sizeDelta = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100;
             visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100 / 2;
 
-            if (itemObjData.pressSlots.Count > 0)
+            if (transform.parent == PlayerUI.Instance.itemParent)
             {
-                for (int i = 0; i < itemObjData.pressSlots.Count; i++)
+                for (int i = 0; i < itemObjData.pressSlotsXY.Count; i++)
                 {
-                    itemObjData.pressSlots[i].hasItem = false;
+                    SlotUI slot = PlayerManager.Instance.GetInventorySlot(itemObjData.pressSlotsXY[i].x, itemObjData.pressSlotsXY[i].y, PlayerUI.Instance.slotParent);
+                    slot.hasItem = false;
                 }
             }
-            itemObjData.pressSlots.Clear();
+            else if (transform.parent == PlayerUI.Instance.storageParent)
+            {
+                for (int i = 0; i < itemObjData.pressSlotsXY.Count; i++)
+                {
+                    SlotUI slot = PlayerManager.Instance.GetStorageSlot(itemObjData.pressSlotsXY[i].x, itemObjData.pressSlotsXY[i].y, PlayerUI.Instance.storageSlot);
+                    slot.hasItem = false;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            itemObjData.pressSlotsXY.Clear();
+
             if (itemObjData.handSlot != null)
             {
                 itemObjData.handSlot.hasItem = false;
@@ -84,27 +105,76 @@ public class ItemObj : MonoBehaviour
 
     public void UnSelected(SlotUI pressSlot)
     {
-        visual.raycastTarget = true;
-        amountText.raycastTarget = true;
-        isSelected = false;
-        rectTransform.anchoredPosition = pressSlot.GetButtonLeftPosition();
-        visual.rectTransform.sizeDelta = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100;
         if (!itemObjData.isRotate)
         {
-            visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100 / 2;
-            itemObjData.pressSlots = PlayerManager.Instance.GetSlot(pressSlot, itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
+            if (pressSlot.itemParent == PlayerUI.Instance.itemParent)
+            {
+                visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100 / 2;
+                itemObjData.pressSlotsXY = PlayerManager.Instance.GetInventorySlot(pressSlot, itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
+            }
+            else if (pressSlot.itemParent == PlayerUI.Instance.storageParent)
+            {
+                visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100 / 2;
+                itemObjData.pressSlotsXY = PlayerManager.Instance.GetStorageSlot(pressSlot, itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight, PlayerUI.Instance.storageSlot.transform);
+            }
+            else
+            {
+                return;
+            }
         }
         else
         {
-            visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridHeight, itemObjData.item.itemGridWidth) * 100 / 2;
-            itemObjData.pressSlots = PlayerManager.Instance.GetSlot(pressSlot, itemObjData.item.itemGridHeight, itemObjData.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
+            if (pressSlot.itemParent == PlayerUI.Instance.itemParent)
+            {
+                visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridHeight, itemObjData.item.itemGridWidth) * 100 / 2;
+                itemObjData.pressSlotsXY = PlayerManager.Instance.GetInventorySlot(pressSlot, itemObjData.item.itemGridHeight, itemObjData.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
+            }
+            else if (pressSlot.itemParent == PlayerUI.Instance.storageParent)
+            {
+                visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridHeight, itemObjData.item.itemGridWidth) * 100 / 2;
+                itemObjData.pressSlotsXY = PlayerManager.Instance.GetStorageSlot(pressSlot, itemObjData.item.itemGridHeight, itemObjData.item.itemGridWidth, PlayerUI.Instance.storageSlot.transform);
+            }
+            else
+            {
+                return;
+            }
         }
 
-        for (int i = 0; i < itemObjData.pressSlots.Count; i++)
+        visual.raycastTarget = true;
+        amountText.raycastTarget = true;
+        isSelected = false;
+        transform.SetParent(pressSlot.itemParent);
+        rectTransform.anchoredPosition = pressSlot.GetButtonLeftPosition();
+        visual.rectTransform.sizeDelta = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100;
+
+        if (pressSlot.itemParent == PlayerUI.Instance.itemParent)
         {
-            itemObjData.pressSlots[i].hasItem = true;
+            for (int i = 0; i < itemObjData.pressSlotsXY.Count; i++)
+            {
+                SlotUI slot = PlayerManager.Instance.GetInventorySlot(itemObjData.pressSlotsXY[i].x, itemObjData.pressSlotsXY[i].y, PlayerUI.Instance.slotParent);
+                slot.hasItem = true;
+            }
         }
+        else if (pressSlot.itemParent == PlayerUI.Instance.storageParent)
+        {
+            for (int i = 0; i < itemObjData.pressSlotsXY.Count; i++)
+            {
+                SlotUI slot = PlayerManager.Instance.GetStorageSlot(itemObjData.pressSlotsXY[i].x, itemObjData.pressSlotsXY[i].y, PlayerUI.Instance.storageSlot);
+                slot.hasItem = true;
+            }
+        }
+        else
+        {
+            return;
+        }
+
         PlayerUI.Instance.curItemObjSelected = null;
+
+        if (PlayerManager.Instance.curStorage != null)
+        {
+            PlayerManager.Instance.curStorage.UpdateStorageData();
+        }
+
     }
 
     public void UnSelected(HandSlotUI handSlot)
@@ -113,12 +183,17 @@ public class ItemObj : MonoBehaviour
         amountText.raycastTarget = true;
         isSelected = false;
         Rotate(false);
+        transform.SetParent(handSlot.rectTransform);
         rectTransform.anchoredPosition = handSlot.GetButtonLeftPosition();
         visual.rectTransform.sizeDelta = new Vector2(handSlot.rectTransform.rect.width, handSlot.rectTransform.rect.height);
         visual.rectTransform.anchoredPosition = new Vector2(handSlot.rectTransform.rect.width, handSlot.rectTransform.rect.height) / 2;
         handSlot.hasItem = true;
         itemObjData.handSlot = handSlot;
         PlayerUI.Instance.curItemObjSelected = null;
+        if (PlayerManager.Instance.curStorage != null)
+        {
+            PlayerManager.Instance.curStorage.UpdateStorageData();
+        }
     }
 
     public void ToggleRotate()

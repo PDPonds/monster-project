@@ -52,6 +52,12 @@ public class PlayerManager : Singleton<PlayerManager>
 
     #endregion
 
+    #region Storage
+    [Header("===== Storage =====")]
+    [HideInInspector] public Storage curStorage;
+    [HideInInspector] public SlotNode[,] storageSlots;
+    #endregion
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -61,7 +67,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private void Start()
     {
-        inventorySlots = PlayerUI.Instance.InitSlot(inventoryWidth, inventoryHeight, PlayerUI.Instance.slotParent.transform, PlayerUI.Instance.itemParent.transform);
+        inventorySlots = PlayerUI.Instance.InitInventorySlot(inventoryWidth, inventoryHeight);
     }
 
     private void Update()
@@ -216,7 +222,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     #region Inventory
 
-    public SlotUI GetSlot(int x, int y, Transform slot)
+    public SlotUI GetInventorySlot(int x, int y, Transform slot)
     {
         if (IsSlotNotOutOfInventorySlot(x, y))
         {
@@ -234,7 +240,28 @@ public class PlayerManager : Singleton<PlayerManager>
         return null;
     }
 
-    public List<SlotUI> GetSlot(SlotUI firstSlot, int width, int height, Transform slot)
+    public List<Vector2Int> GetInventorySlot(SlotUI firstSlot, int width, int height, Transform slot)
+    {
+        List<Vector2Int> slots = new List<Vector2Int>();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int xGrid = firstSlot.x + x;
+                int yGrid = firstSlot.y + y;
+                if (IsSlotNotOutOfInventorySlot(xGrid, yGrid))
+                {
+                    Vector2Int near = new Vector2Int(firstSlot.x + x, firstSlot.y + y);
+                    slots.Add(near);
+                }
+            }
+        }
+
+        return slots;
+    }
+
+    public List<SlotUI> GetListInventorySlot(SlotUI firstSlot, int width, int height, Transform slot)
     {
         List<SlotUI> slots = new List<SlotUI>();
 
@@ -246,7 +273,7 @@ public class PlayerManager : Singleton<PlayerManager>
                 int yGrid = firstSlot.y + y;
                 if (IsSlotNotOutOfInventorySlot(xGrid, yGrid))
                 {
-                    SlotUI near = GetSlot(firstSlot.x + x, firstSlot.y + y, slot);
+                    SlotUI near = GetInventorySlot(firstSlot.x + x, firstSlot.y + y, slot);
                     slots.Add(near);
                 }
             }
@@ -255,29 +282,81 @@ public class PlayerManager : Singleton<PlayerManager>
         return slots;
     }
 
+    public SlotUI GetStorageSlot(int x, int y, Transform slot)
+    {
+        if (IsSlotNotOutOfStorageSlot(x, y))
+        {
+            for (int i = 0; i < slot.childCount; i++)
+            {
+                GameObject obj = slot.GetChild(i).gameObject;
+                SlotUI slotUi = obj.GetComponent<SlotUI>();
+                if (slotUi.x == x && slotUi.y == y)
+                {
+                    return slotUi;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<Vector2Int> GetStorageSlot(SlotUI firstSlot, int width, int height, Transform slot)
+    {
+        List<Vector2Int> slots = new List<Vector2Int>();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int xGrid = firstSlot.x + x;
+                int yGrid = firstSlot.y + y;
+                if (IsSlotNotOutOfStorageSlot(xGrid, yGrid))
+                {
+                    Vector2Int near = new Vector2Int(firstSlot.x + x, firstSlot.y + y);
+                    slots.Add(near);
+                }
+            }
+        }
+
+        return slots;
+    }
+
+    public List<SlotUI> GetListStorageSlot(SlotUI firstSlot, int width, int height, Transform slot)
+    {
+        List<SlotUI> slots = new List<SlotUI>();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int xGrid = firstSlot.x + x;
+                int yGrid = firstSlot.y + y;
+                if (IsSlotNotOutOfStorageSlot(xGrid, yGrid))
+                {
+                    SlotUI near = GetStorageSlot(firstSlot.x + x, firstSlot.y + y, slot);
+                    slots.Add(near);
+                }
+            }
+        }
+
+        return slots;
+    }
+
+    public bool IsSlotNotOutOfStorageSlot(int x, int y)
+    {
+        if (curStorage != null)
+        {
+            return (x >= 0 && y >= 0 && x < curStorage.storageWidth && y < curStorage.storageHeight);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public bool IsSlotNotOutOfInventorySlot(int x, int y)
     {
         return (x >= 0 && y >= 0 && x < inventoryWidth && y < inventoryHeight);
-    }
-
-    public List<ItemObjData> GetItemInInventory()
-    {
-        List<ItemObjData> slots = new List<ItemObjData>();
-
-        if (PlayerUI.Instance.itemParent.childCount > 0)
-        {
-            for (int i = 0; i < PlayerUI.Instance.itemParent.childCount; i++)
-            {
-                GameObject itemUI = PlayerUI.Instance.itemParent.GetChild(i).gameObject;
-                ItemObj itemObj = itemUI.GetComponent<ItemObj>();
-                ItemObjData slot = new ItemObjData();
-                slot.item = itemObj.itemObjData.item;
-                slot.amount = itemObj.itemObjData.amount;
-                slots.Add(slot);
-            }
-
-        }
-        return slots;
     }
 
     #endregion
@@ -365,11 +444,13 @@ public class PlayerManager : Singleton<PlayerManager>
 public class SlotNode
 {
     public SlotUI slotUI;
-    public SlotNode(SlotUI slotUI, int x, int y)
+
+    public SlotNode(SlotUI slotUI, int x, int y, Transform itemParent)
     {
         this.slotUI = slotUI;
         this.slotUI.x = x;
         this.slotUI.y = y;
+        this.slotUI.itemParent = itemParent;
     }
 }
 
@@ -379,7 +460,7 @@ public class ItemObjData
     public ItemSO item;
     public int amount;
 
-    public List<SlotUI> pressSlots = new List<SlotUI>();
+    public List<Vector2Int> pressSlotsXY = new List<Vector2Int>();
     public HandSlotUI handSlot;
 
     public bool isRotate;

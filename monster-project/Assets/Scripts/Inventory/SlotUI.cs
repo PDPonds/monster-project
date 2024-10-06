@@ -8,9 +8,11 @@ public class SlotUI : MonoBehaviour
     [SerializeField] RectTransform rectTransform;
     Button button;
 
-    [HideInInspector] public int x;
-    [HideInInspector] public int y;
-    [HideInInspector] public bool hasItem;
+    [HideInInspector]public Transform itemParent;
+
+    [HideInInspector]public int x;
+    [HideInInspector]public int y;
+    [HideInInspector]public bool hasItem;
 
     private void Awake()
     {
@@ -63,8 +65,36 @@ public class SlotUI : MonoBehaviour
     public bool CanPress(ItemObj item, bool isRotate)
     {
         List<SlotUI> slots = new List<SlotUI>();
-        if (!isRotate) slots = PlayerManager.Instance.GetSlot(this, item.itemObjData.item.itemGridWidth, item.itemObjData.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
-        else slots = PlayerManager.Instance.GetSlot(this, item.itemObjData.item.itemGridHeight, item.itemObjData.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
+        if (!isRotate)
+        {
+            if (itemParent == PlayerUI.Instance.itemParent)
+            {
+                slots = PlayerManager.Instance.GetListInventorySlot(this, item.itemObjData.item.itemGridWidth, item.itemObjData.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
+            }
+            else if (itemParent == PlayerUI.Instance.storageParent)
+            {
+                slots = PlayerManager.Instance.GetListStorageSlot(this, item.itemObjData.item.itemGridWidth, item.itemObjData.item.itemGridHeight, PlayerUI.Instance.storageSlot.transform);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (itemParent == PlayerUI.Instance.itemParent)
+            {
+                slots = PlayerManager.Instance.GetListInventorySlot(this, item.itemObjData.item.itemGridHeight, item.itemObjData.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
+            }
+            else if (itemParent == PlayerUI.Instance.storageParent)
+            {
+                slots = PlayerManager.Instance.GetListStorageSlot(this, item.itemObjData.item.itemGridHeight, item.itemObjData.item.itemGridWidth, PlayerUI.Instance.storageSlot.transform);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         if (slots.Count != item.itemObjData.item.GetSlotSize())
         {
@@ -75,17 +105,39 @@ public class SlotUI : MonoBehaviour
         {
             for (int i = 0; i < slots.Count; i++)
             {
-                if (!PlayerManager.Instance.IsSlotNotOutOfInventorySlot(slots[i].x, slots[i].y))
+                if (itemParent == PlayerUI.Instance.itemParent)
                 {
-                    return false;
-                }
-                else
-                {
-                    if (slots[i].hasItem)
+                    if (!PlayerManager.Instance.IsSlotNotOutOfInventorySlot(slots[i].x, slots[i].y))
                     {
                         return false;
                     }
+                    else
+                    {
+                        if (slots[i].hasItem)
+                        {
+                            return false;
+                        }
+                    }
                 }
+                else if (itemParent == PlayerUI.Instance.storageParent)
+                {
+                    if (!PlayerManager.Instance.IsSlotNotOutOfStorageSlot(slots[i].x, slots[i].y))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        if (slots[i].hasItem)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+                
             }
         }
         return true;

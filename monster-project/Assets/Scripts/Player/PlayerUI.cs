@@ -20,11 +20,18 @@ public class PlayerUI : Singleton<PlayerUI>
     [Header("- Item Obj")]
     public Transform itemParent;
 
+    [Header("- Toggle Show and Hide Storage")]
+    public Transform storageTab;
+    [Header("- Inventory UI")]
+    public Transform storageSlot;
+    [Header("- Item Obj")]
+    public Transform storageParent;
+
     [Header("Test")]
     public ItemSO testItem;
     [HideInInspector] public GameObject curItemObjSelected;
 
-    public SlotNode[,] InitSlot(int width, int height, Transform parent, Transform itemParent)
+    public SlotNode[,] InitInventorySlot(int width, int height)
     {
         SlotNode[,] slots = new SlotNode[width, height];
 
@@ -33,7 +40,7 @@ public class PlayerUI : Singleton<PlayerUI>
             for (int y = 0; y < height; y++)
             {
                 GameObject obj = Instantiate(slotObj);
-                obj.transform.SetParent(parent, false);
+                obj.transform.SetParent(slotParent, false);
                 RectTransform rect = obj.GetComponent<RectTransform>();
                 Vector2 size = new Vector2(rect.rect.width, rect.rect.height);
                 float originX = ((float)(-size.x * (float)width) / 2f) + size.x / 2f;
@@ -41,7 +48,32 @@ public class PlayerUI : Singleton<PlayerUI>
                 Vector2 origin = new Vector2(originX, originY);
                 rect.anchoredPosition = new Vector3(x, y, 0) * size + origin;
                 SlotUI slotUi = obj.GetComponent<SlotUI>();
-                SlotNode slot = new SlotNode(slotUi, x, y);
+                SlotNode slot = new SlotNode(slotUi, x, y, itemParent);
+                slots[x, y] = slot;
+            }
+        }
+
+        return slots;
+    }
+
+    public SlotNode[,] InitStorageSlot(int width, int height)
+    {
+        SlotNode[,] slots = new SlotNode[width, height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                GameObject obj = Instantiate(slotObj);
+                obj.transform.SetParent(storageSlot);
+                RectTransform rect = obj.GetComponent<RectTransform>();
+                Vector2 size = new Vector2(rect.rect.width, rect.rect.height);
+                float originX = ((float)(-size.x * (float)width)) + size.x / 2;
+                float originY = ((float)(-size.y * (float)height) / 2f) + size.y / 2f;
+                Vector2 origin = new Vector2(originX, originY);
+                rect.anchoredPosition = new Vector3(x, y, 0) * size + origin;
+                SlotUI slotUi = obj.GetComponent<SlotUI>();
+                SlotNode slot = new SlotNode(slotUi, x, y, storageParent);
                 slots[x, y] = slot;
             }
         }
@@ -61,8 +93,14 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         if (inventoryTab.gameObject.activeSelf)
         {
-            inventoryTab.gameObject.SetActive(false);
-            PlayerManager.Instance.SwitchPhase(PlayerPhase.Normal);
+            if (curItemObjSelected == null)
+            {
+                if(PlayerManager.Instance.curStorage != null) PlayerManager.Instance.curStorage.UpdateStorageData();
+
+                inventoryTab.gameObject.SetActive(false);
+                HideStorage();
+                PlayerManager.Instance.SwitchPhase(PlayerPhase.Normal);
+            }
         }
         else
         {
@@ -84,7 +122,7 @@ public class PlayerUI : Singleton<PlayerUI>
         return obj;
     }
 
-    public bool TryAddItem(ItemSO item, int amount)
+    public bool TryAddItemToInventory(ItemSO item, int amount)
     {
         GameObject obj = InitItemObj(item, amount);
         ItemObj itemObj = obj.GetComponent<ItemObj>();
@@ -93,7 +131,7 @@ public class PlayerUI : Singleton<PlayerUI>
         {
             for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
             {
-                SlotUI pressPos = PlayerManager.Instance.GetSlot(x, y, slotParent.transform);
+                SlotUI pressPos = PlayerManager.Instance.GetInventorySlot(x, y, slotParent.transform);
                 if (pressPos.CanPress(itemObj, itemObj.itemObjData.isRotate))
                 {
                     itemObj.UnSelected(pressPos);
@@ -108,7 +146,7 @@ public class PlayerUI : Singleton<PlayerUI>
         {
             for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
             {
-                SlotUI pressPos = PlayerManager.Instance.GetSlot(x, y, slotParent.transform);
+                SlotUI pressPos = PlayerManager.Instance.GetInventorySlot(x, y, slotParent.transform);
                 if (pressPos.CanPress(itemObj, itemObj.itemObjData.isRotate))
                 {
                     itemObj.UnSelected(pressPos);
@@ -152,5 +190,30 @@ public class PlayerUI : Singleton<PlayerUI>
 
     #endregion
 
+    #region Storage
+
+    public void ShowStorage(int width, int height)
+    {
+        inventoryTab.gameObject.SetActive(true);
+        storageTab.gameObject.SetActive(true);
+        PlayerManager.Instance.storageSlots = InitStorageSlot(width, height);
+        PlayerManager.Instance.SwitchPhase(PlayerPhase.UIShow);
+    }
+
+    public void HideStorage()
+    {
+        storageTab.gameObject.SetActive(false);
+        ClearSlot(storageParent, storageSlot);
+    }
+
+    #endregion
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            TryAddItemToInventory(testItem, 1);
+        }
+    }
 
 }

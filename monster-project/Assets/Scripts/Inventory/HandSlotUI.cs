@@ -18,7 +18,7 @@ public class HandSlotUI : MonoBehaviour
 
     public Vector2 GetCenterPosition()
     {
-        return rectTransform.anchoredPosition;
+        return Vector2.zero;
     }
 
     public Vector2 GetButtonLeftPosition()

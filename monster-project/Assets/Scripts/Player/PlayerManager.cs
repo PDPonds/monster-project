@@ -359,6 +359,7 @@ public class PlayerManager : Singleton<PlayerManager>
         return (x >= 0 && y >= 0 && x < inventoryWidth && y < inventoryHeight);
     }
 
+
     #endregion
 
     #region Interact

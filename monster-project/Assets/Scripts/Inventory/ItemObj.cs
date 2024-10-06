@@ -230,6 +230,16 @@ public class ItemObj : MonoBehaviour
         UpdateAmountText();
     }
 
+    public void AddItemAmount(int count)
+    {
+        itemObjData.amount += count;
+        if (itemObjData.amount > itemObjData.item.maxStack)
+        {
+            itemObjData.amount = itemObjData.item.maxStack;
+        }
+        UpdateAmountText();
+    }
+
     public void RemoveItemAmount()
     {
         itemObjData.amount--;

@@ -95,7 +95,7 @@ public class PlayerUI : Singleton<PlayerUI>
         {
             if (curItemObjSelected == null)
             {
-                if(PlayerManager.Instance.curStorage != null) PlayerManager.Instance.curStorage.UpdateStorageData();
+                if (PlayerManager.Instance.curStorage != null) PlayerManager.Instance.curStorage.UpdateStorageData();
 
                 inventoryTab.gameObject.SetActive(false);
                 HideStorage();
@@ -111,7 +111,7 @@ public class PlayerUI : Singleton<PlayerUI>
 
     public GameObject InitItemObj(ItemSO item, int amount)
     {
-        GameObject obj = Instantiate(itemObjPrefab, itemParent);
+        GameObject obj = Instantiate(itemObjPrefab);
 
         ItemObj itemObj = obj.GetComponent<ItemObj>();
         itemObj.itemObjData.item = item;
@@ -127,30 +127,40 @@ public class PlayerUI : Singleton<PlayerUI>
         GameObject obj = InitItemObj(item, amount);
         ItemObj itemObj = obj.GetComponent<ItemObj>();
 
-        for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
+        if (HasNotFullAmountItem(item, out int hasAmount, out int itemIndex))
         {
-            for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
+            Debug.Log("Has Item");
+            List<ItemObj> items = GetItemInInventory();
+            items[itemIndex].AddItemAmount(amount);
+        }
+        else
+        {
+            Debug.Log("Don't Has Item");
+            for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
             {
-                SlotUI pressPos = PlayerManager.Instance.GetInventorySlot(x, y, slotParent.transform);
-                if (pressPos.CanPress(itemObj, itemObj.itemObjData.isRotate))
+                for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
                 {
-                    itemObj.UnSelected(pressPos);
-                    return true;
+                    SlotUI pressPos = PlayerManager.Instance.GetInventorySlot(x, y, slotParent.transform);
+                    if (pressPos.CanPress(itemObj, itemObj.itemObjData.isRotate))
+                    {
+                        itemObj.UnSelected(pressPos);
+                        return true;
+                    }
                 }
             }
-        }
 
-        itemObj.ToggleRotate();
+            itemObj.ToggleRotate();
 
-        for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
-        {
-            for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
+            for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
             {
-                SlotUI pressPos = PlayerManager.Instance.GetInventorySlot(x, y, slotParent.transform);
-                if (pressPos.CanPress(itemObj, itemObj.itemObjData.isRotate))
+                for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
                 {
-                    itemObj.UnSelected(pressPos);
-                    return true;
+                    SlotUI pressPos = PlayerManager.Instance.GetInventorySlot(x, y, slotParent.transform);
+                    if (pressPos.CanPress(itemObj, itemObj.itemObjData.isRotate))
+                    {
+                        itemObj.UnSelected(pressPos);
+                        return true;
+                    }
                 }
             }
         }
@@ -172,6 +182,60 @@ public class PlayerUI : Singleton<PlayerUI>
             ItemObj itemObj = curItemObjSelected.GetComponent<ItemObj>();
             itemObj.ToggleRotate();
         }
+    }
+
+    public List<ItemObj> GetItemInInventory()
+    {
+        List<ItemObj> items = new List<ItemObj>();
+        if (itemParent.childCount > 0)
+        {
+            for (int i = 0; i < itemParent.childCount; i++)
+            {
+                ItemObj itemObj = itemParent.GetChild(i).GetComponent<ItemObj>();
+                items.Add(itemObj);
+            }
+        }
+        return items;
+    }
+
+    public bool HasItem(ItemSO item, out int itemIndex)
+    {
+        List<ItemObj> items = GetItemInInventory();
+        if (items.Count > 0)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                ItemObjData data = items[i].itemObjData;
+                if (item == data.item)
+                {
+                    itemIndex = i;
+                    return true;
+                }
+            }
+        }
+        itemIndex = -1;
+        return false;
+    }
+
+    public bool HasNotFullAmountItem(ItemSO item, out int hasAmount, out int itemIndex)
+    {
+        List<ItemObj> items = GetItemInInventory();
+        if (items.Count > 0)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                ItemObjData data = items[i].itemObjData;
+                if (item == data.item && data.amount < item.maxStack)
+                {
+                    itemIndex = i;
+                    hasAmount = data.amount;
+                    return true;
+                }
+            }
+        }
+        itemIndex = -1;
+        hasAmount = 0;
+        return false;
     }
 
     #endregion

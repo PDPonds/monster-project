@@ -105,14 +105,17 @@ public class PlayerManager : Singleton<PlayerManager>
     #region Aim
     public void ToggleAim()
     {
-        isAim = !isAim;
-        if (isAim)
+        if (IsPhase(PlayerPhase.Normal))
         {
-            anim.SetFloat("isAim", 1);
-        }
-        else
-        {
-            anim.SetFloat("isAim", 0);
+            isAim = !isAim;
+            if (isAim)
+            {
+                anim.SetFloat("isAim", 1);
+            }
+            else
+            {
+                anim.SetFloat("isAim", 0);
+            }
         }
     }
     #endregion
@@ -257,9 +260,9 @@ public class PlayerManager : Singleton<PlayerManager>
         return (x >= 0 && y >= 0 && x < inventoryWidth && y < inventoryHeight);
     }
 
-    public List<Slot> GetItemInInventory()
+    public List<ItemObjData> GetItemInInventory()
     {
-        List<Slot> slots = new List<Slot>();
+        List<ItemObjData> slots = new List<ItemObjData>();
 
         if (PlayerUI.Instance.itemParent.childCount > 0)
         {
@@ -267,9 +270,9 @@ public class PlayerManager : Singleton<PlayerManager>
             {
                 GameObject itemUI = PlayerUI.Instance.itemParent.GetChild(i).gameObject;
                 ItemObj itemObj = itemUI.GetComponent<ItemObj>();
-                Slot slot = new Slot();
-                slot.item = itemObj.item;
-                slot.amount = itemObj.amount;
+                ItemObjData slot = new ItemObjData();
+                slot.item = itemObj.itemObjData.item;
+                slot.amount = itemObj.itemObjData.amount;
                 slots.Add(slot);
             }
 
@@ -371,9 +374,15 @@ public class SlotNode
 }
 
 [Serializable]
-public class Slot
+public class ItemObjData
 {
     public ItemSO item;
     public int amount;
+
+    public List<SlotUI> pressSlots = new List<SlotUI>();
+    public HandSlotUI handSlot;
+
+    public bool isRotate;
+
 
 }

@@ -52,7 +52,7 @@ public class SlotUI : MonoBehaviour
         if (PlayerUI.Instance.HasItemObjSelected())
         {
             ItemObj itemObj = PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>();
-            if (CanPress(PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>(), itemObj.isRotate))
+            if (CanPress(PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>(), itemObj.itemObjData.isRotate))
             {
                 itemObj.UnSelected(this);
             }
@@ -63,10 +63,10 @@ public class SlotUI : MonoBehaviour
     public bool CanPress(ItemObj item, bool isRotate)
     {
         List<SlotUI> slots = new List<SlotUI>();
-        if (!isRotate) slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridWidth, item.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
-        else slots = PlayerManager.Instance.GetSlot(this, item.item.itemGridHeight, item.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
+        if (!isRotate) slots = PlayerManager.Instance.GetSlot(this, item.itemObjData.item.itemGridWidth, item.itemObjData.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
+        else slots = PlayerManager.Instance.GetSlot(this, item.itemObjData.item.itemGridHeight, item.itemObjData.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
 
-        if (slots.Count != item.item.GetSlotSize())
+        if (slots.Count != item.itemObjData.item.GetSlotSize())
         {
             return false;
         }

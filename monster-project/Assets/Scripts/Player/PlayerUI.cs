@@ -76,8 +76,8 @@ public class PlayerUI : Singleton<PlayerUI>
         GameObject obj = Instantiate(itemObjPrefab, itemParent);
 
         ItemObj itemObj = obj.GetComponent<ItemObj>();
-        itemObj.item = item;
-        itemObj.amount = amount;
+        itemObj.itemObjData.item = item;
+        itemObj.itemObjData.amount = amount;
         itemObj.UpdateAmountText();
         itemObj.visual.sprite = item.itemSprite;
 
@@ -94,7 +94,7 @@ public class PlayerUI : Singleton<PlayerUI>
             for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
             {
                 SlotUI pressPos = PlayerManager.Instance.GetSlot(x, y, slotParent.transform);
-                if (pressPos.CanPress(itemObj, itemObj.isRotate))
+                if (pressPos.CanPress(itemObj, itemObj.itemObjData.isRotate))
                 {
                     itemObj.UnSelected(pressPos);
                     return true;
@@ -109,7 +109,7 @@ public class PlayerUI : Singleton<PlayerUI>
             for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
             {
                 SlotUI pressPos = PlayerManager.Instance.GetSlot(x, y, slotParent.transform);
-                if (pressPos.CanPress(itemObj, itemObj.isRotate))
+                if (pressPos.CanPress(itemObj, itemObj.itemObjData.isRotate))
                 {
                     itemObj.UnSelected(pressPos);
                     return true;

@@ -6,11 +6,7 @@ using UnityEngine.UI;
 
 public class ItemObj : MonoBehaviour
 {
-    [HideInInspector] public ItemSO item;
-    [HideInInspector] public int amount;
-
-    [HideInInspector] public List<SlotUI> pressSlots;
-    [HideInInspector] public HandSlotUI handSlot;
+    public ItemObjData itemObjData = new ItemObjData();
 
     Button button;
     [SerializeField] RectTransform rectTransform;
@@ -19,7 +15,6 @@ public class ItemObj : MonoBehaviour
 
     bool isSelected;
 
-    [HideInInspector] public bool isRotate;
 
     private void Awake()
     {
@@ -41,9 +36,9 @@ public class ItemObj : MonoBehaviour
         if (PlayerUI.Instance.HasItemObjSelected())
         {
             ItemObj itemObj = PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>();
-            if (item == itemObj.item)
+            if (itemObjData.item == itemObj.itemObjData.item)
             {
-                if (amount < item.maxStack)
+                if (itemObjData.amount < itemObjData.item.maxStack)
                 {
                     AddItemAmount();
                     itemObj.RemoveItemAmount();
@@ -64,22 +59,23 @@ public class ItemObj : MonoBehaviour
             amountText.raycastTarget = false;
             isSelected = true;
 
-            Rotate(false);
-            visual.rectTransform.sizeDelta = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100;
-            visual.rectTransform.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
+            if (itemObjData.handSlot != null) Rotate(false);
 
-            if (pressSlots.Count > 0)
+            visual.rectTransform.sizeDelta = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100;
+            visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100 / 2;
+
+            if (itemObjData.pressSlots.Count > 0)
             {
-                for (int i = 0; i < pressSlots.Count; i++)
+                for (int i = 0; i < itemObjData.pressSlots.Count; i++)
                 {
-                    pressSlots[i].hasItem = false;
+                    itemObjData.pressSlots[i].hasItem = false;
                 }
             }
-            pressSlots.Clear();
-            if (handSlot != null)
+            itemObjData.pressSlots.Clear();
+            if (itemObjData.handSlot != null)
             {
-                handSlot.hasItem = false;
-                handSlot = null;
+                itemObjData.handSlot.hasItem = false;
+                itemObjData.handSlot = null;
             }
 
             PlayerUI.Instance.curItemObjSelected = gameObject;
@@ -92,21 +88,21 @@ public class ItemObj : MonoBehaviour
         amountText.raycastTarget = true;
         isSelected = false;
         rectTransform.anchoredPosition = pressSlot.GetButtonLeftPosition();
-        visual.rectTransform.sizeDelta = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100;
-        if (!isRotate)
+        visual.rectTransform.sizeDelta = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100;
+        if (!itemObjData.isRotate)
         {
-            visual.rectTransform.anchoredPosition = new Vector2(item.itemGridWidth, item.itemGridHeight) * 100 / 2;
-            pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridWidth, item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
+            visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight) * 100 / 2;
+            itemObjData.pressSlots = PlayerManager.Instance.GetSlot(pressSlot, itemObjData.item.itemGridWidth, itemObjData.item.itemGridHeight, PlayerUI.Instance.slotParent.transform);
         }
         else
         {
-            visual.rectTransform.anchoredPosition = new Vector2(item.itemGridHeight, item.itemGridWidth) * 100 / 2;
-            pressSlots = PlayerManager.Instance.GetSlot(pressSlot, item.itemGridHeight, item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
+            visual.rectTransform.anchoredPosition = new Vector2(itemObjData.item.itemGridHeight, itemObjData.item.itemGridWidth) * 100 / 2;
+            itemObjData.pressSlots = PlayerManager.Instance.GetSlot(pressSlot, itemObjData.item.itemGridHeight, itemObjData.item.itemGridWidth, PlayerUI.Instance.slotParent.transform);
         }
 
-        for (int i = 0; i < pressSlots.Count; i++)
+        for (int i = 0; i < itemObjData.pressSlots.Count; i++)
         {
-            pressSlots[i].hasItem = true;
+            itemObjData.pressSlots[i].hasItem = true;
         }
         PlayerUI.Instance.curItemObjSelected = null;
     }
@@ -116,18 +112,19 @@ public class ItemObj : MonoBehaviour
         visual.raycastTarget = true;
         amountText.raycastTarget = true;
         isSelected = false;
+        Rotate(false);
         rectTransform.anchoredPosition = handSlot.GetButtonLeftPosition();
         visual.rectTransform.sizeDelta = new Vector2(handSlot.rectTransform.rect.width, handSlot.rectTransform.rect.height);
         visual.rectTransform.anchoredPosition = new Vector2(handSlot.rectTransform.rect.width, handSlot.rectTransform.rect.height) / 2;
         handSlot.hasItem = true;
-        this.handSlot = handSlot;
+        itemObjData.handSlot = handSlot;
         PlayerUI.Instance.curItemObjSelected = null;
     }
 
     public void ToggleRotate()
     {
-        isRotate = !isRotate;
-        if (isRotate)
+        itemObjData.isRotate = !itemObjData.isRotate;
+        if (itemObjData.isRotate)
         {
             visual.rectTransform.localRotation = Quaternion.Euler(0, 0, 90);
         }
@@ -140,8 +137,8 @@ public class ItemObj : MonoBehaviour
 
     public void Rotate(bool isRotate)
     {
-        this.isRotate = isRotate;
-        if (this.isRotate)
+        itemObjData.isRotate = isRotate;
+        if (itemObjData.isRotate)
         {
             visual.rectTransform.localRotation = Quaternion.Euler(0, 0, 90);
         }
@@ -154,15 +151,15 @@ public class ItemObj : MonoBehaviour
 
     public void AddItemAmount()
     {
-        amount++;
+        itemObjData.amount++;
         UpdateAmountText();
     }
 
     public void RemoveItemAmount()
     {
-        amount--;
+        itemObjData.amount--;
         UpdateAmountText();
-        if (amount <= 0)
+        if (itemObjData.amount <= 0)
         {
             DestroyItem();
         }
@@ -176,7 +173,7 @@ public class ItemObj : MonoBehaviour
 
     public void UpdateAmountText()
     {
-        amountText.text = amount.ToString();
+        amountText.text = itemObjData.amount.ToString();
     }
 
 }

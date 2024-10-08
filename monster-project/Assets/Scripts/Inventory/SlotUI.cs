@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SlotUI : MonoBehaviour
+public class SlotUI : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] RectTransform rectTransform;
     Button button;
 
-    [HideInInspector]public Transform itemParent;
+    [HideInInspector] public Transform itemParent;
 
-    [HideInInspector]public int x;
-    [HideInInspector]public int y;
-    [HideInInspector]public bool hasItem;
+    [HideInInspector] public int x;
+    [HideInInspector] public int y;
+    [HideInInspector] public bool hasItem;
 
     private void Awake()
     {
@@ -59,7 +60,6 @@ public class SlotUI : MonoBehaviour
                 itemObj.UnSelected(this);
             }
         }
-
     }
 
     public bool CanPress(ItemObj item, bool isRotate)
@@ -137,10 +137,32 @@ public class SlotUI : MonoBehaviour
                 {
                     return false;
                 }
-                
+
             }
         }
         return true;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            if (PlayerUI.Instance.HasItemObjSelected())
+            {
+                ItemObj itemObj = PlayerUI.Instance.curItemObjSelected.GetComponent<ItemObj>();
+                if (CanPress(itemObj, itemObj.itemObjData.isRotate))
+                {
+                    GameObject obj = PlayerUI.Instance.InitItemObj(itemObj.itemObjData.item, 1);
+                    ItemObj curItemObj = obj.GetComponent<ItemObj>();
+                    curItemObj.Rotate(itemObj.itemObjData.isRotate);
+
+                    itemObj.RemoveItemAmount();
+                    curItemObj.UnSelected(this);
+
+                    if (itemObj != null) PlayerUI.Instance.curItemObjSelected = itemObj.gameObject;
+                }
+            }
+        }
     }
 
 }

@@ -192,13 +192,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b70840261424d842a868eb2913dbdd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item: {fileID: 0}
-  amount: 0
-  pressSlots: []
+  itemObjData:
+    item: {fileID: 0}
+    amount: 0
+    pressSlotsXY: []
+    handSlot: {fileID: 0}
+    isRotate: 0
   rectTransform: {fileID: 3064886067868819517}
   visual: {fileID: 9208660098786474475}
   amountText: {fileID: 6263368261728832072}
-  isRotate: 0
 --- !u!1 &8928713313719127094
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,6 +213,7 @@ GameObject:
   - component: {fileID: 5395122649780228134}
   - component: {fileID: 9208660098786474475}
   - component: {fileID: 2229585151637112405}
+  - component: {fileID: 4527884450374996299}
   m_Layer: 3
   m_Name: Visual
   m_TagString: Untagged
@@ -320,3 +323,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4527884450374996299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8928713313719127094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b881138097e4eb94a8d3d2b2a73ac8a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

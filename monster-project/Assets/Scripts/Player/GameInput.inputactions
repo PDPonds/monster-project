@@ -152,7 +152,18 @@
                 {
                     "name": "",
                     "id": "39dcf5ce-2099-4f5f-b2cb-2741a8f43565",
-                    "path": "<Mouse>/rightButton",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RotateOnSelect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "45854208-691b-4b41-9246-cd800f5c1cf6",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

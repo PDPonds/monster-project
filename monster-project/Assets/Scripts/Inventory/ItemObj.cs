@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ItemObj : MonoBehaviour
@@ -19,6 +20,8 @@ public class ItemObj : MonoBehaviour
     private void Awake()
     {
         button = visual.GetComponent<Button>();
+        ItemObjVisual itemObjVisual = visual.GetComponent<ItemObjVisual>();
+        itemObjVisual.SetupItemVisual(this);
 
         button.onClick.AddListener(OnClickThisItem);
     }
@@ -57,7 +60,7 @@ public class ItemObj : MonoBehaviour
 
     }
 
-    void SelectThisItem()
+    public void SelectThisItem()
     {
         if (!PlayerUI.Instance.HasItemObjSelected())
         {
@@ -227,6 +230,10 @@ public class ItemObj : MonoBehaviour
     public void AddItemAmount()
     {
         itemObjData.amount++;
+        if (itemObjData.amount > itemObjData.item.maxStack)
+        {
+            itemObjData.amount = itemObjData.item.maxStack;
+        }
         UpdateAmountText();
     }
 
@@ -250,6 +257,27 @@ public class ItemObj : MonoBehaviour
         }
     }
 
+    public void RemoveItemAmount(int count)
+    {
+        itemObjData.amount -= count;
+        UpdateAmountText();
+        if (itemObjData.amount <= 0)
+        {
+            DestroyItem();
+        }
+    }
+
+    public int GetHalfAmount()
+    {
+        if (itemObjData.amount > 1)
+        {
+            int half = itemObjData.amount / 2;
+            return half;
+        }
+
+        return 0;
+    }
+
     public void DestroyItem()
     {
         PlayerUI.Instance.curItemObjSelected = null;
@@ -258,7 +286,7 @@ public class ItemObj : MonoBehaviour
 
     public void UpdateAmountText()
     {
-        amountText.text = itemObjData.amount.ToString();
+        amountText.text = $"{itemObjData.amount} / {itemObjData.item.maxStack}";
     }
 
 }

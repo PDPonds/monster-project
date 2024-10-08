@@ -129,13 +129,11 @@ public class PlayerUI : Singleton<PlayerUI>
 
         if (HasNotFullAmountItem(item, out int hasAmount, out int itemIndex))
         {
-            Debug.Log("Has Item");
             List<ItemObj> items = GetItemInInventory();
             items[itemIndex].AddItemAmount(amount);
         }
         else
         {
-            Debug.Log("Don't Has Item");
             for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
             {
                 for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
@@ -177,7 +175,7 @@ public class PlayerUI : Singleton<PlayerUI>
 
     public void RotateSelectedObject()
     {
-        if (HasItemObjSelected() && inventoryTab.gameObject.activeSelf)
+        if (HasItemObjSelected() && inventoryTab.gameObject.activeSelf && PlayerManager.Instance.IsPhase(PlayerPhase.UIShow))
         {
             ItemObj itemObj = curItemObjSelected.GetComponent<ItemObj>();
             itemObj.ToggleRotate();

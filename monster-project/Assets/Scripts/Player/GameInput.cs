@@ -80,6 +80,33 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HandSlot1"",
+                    ""type"": ""Button"",
+                    ""id"": ""fb337856-1da1-469b-9002-eb3b0d2057ac"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HandSlot2"",
+                    ""type"": ""Button"",
+                    ""id"": ""a024062d-a81e-424e-aaa9-2a7deef3f079"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HandSlot3"",
+                    ""type"": ""Button"",
+                    ""id"": ""acf5cb92-19e2-4826-a51c-88960002875a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -203,6 +230,39 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1123075f-873e-4bf2-8c07-56e0aa749803"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HandSlot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""913775a6-2549-46a3-922a-3681c9e9dbfa"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HandSlot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""568e28ca-6b6c-4db9-a886-cb3e77db2ee5"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HandSlot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -217,6 +277,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_action_ToggleInventory = m_action.FindAction("ToggleInventory", throwIfNotFound: true);
         m_action_RotateOnSelect = m_action.FindAction("RotateOnSelect", throwIfNotFound: true);
         m_action_Interact = m_action.FindAction("Interact", throwIfNotFound: true);
+        m_action_HandSlot1 = m_action.FindAction("HandSlot1", throwIfNotFound: true);
+        m_action_HandSlot2 = m_action.FindAction("HandSlot2", throwIfNotFound: true);
+        m_action_HandSlot3 = m_action.FindAction("HandSlot3", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -284,6 +347,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_action_ToggleInventory;
     private readonly InputAction m_action_RotateOnSelect;
     private readonly InputAction m_action_Interact;
+    private readonly InputAction m_action_HandSlot1;
+    private readonly InputAction m_action_HandSlot2;
+    private readonly InputAction m_action_HandSlot3;
     public struct ActionActions
     {
         private @GameInput m_Wrapper;
@@ -294,6 +360,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @ToggleInventory => m_Wrapper.m_action_ToggleInventory;
         public InputAction @RotateOnSelect => m_Wrapper.m_action_RotateOnSelect;
         public InputAction @Interact => m_Wrapper.m_action_Interact;
+        public InputAction @HandSlot1 => m_Wrapper.m_action_HandSlot1;
+        public InputAction @HandSlot2 => m_Wrapper.m_action_HandSlot2;
+        public InputAction @HandSlot3 => m_Wrapper.m_action_HandSlot3;
         public InputActionMap Get() { return m_Wrapper.m_action; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -321,6 +390,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @HandSlot1.started += instance.OnHandSlot1;
+            @HandSlot1.performed += instance.OnHandSlot1;
+            @HandSlot1.canceled += instance.OnHandSlot1;
+            @HandSlot2.started += instance.OnHandSlot2;
+            @HandSlot2.performed += instance.OnHandSlot2;
+            @HandSlot2.canceled += instance.OnHandSlot2;
+            @HandSlot3.started += instance.OnHandSlot3;
+            @HandSlot3.performed += instance.OnHandSlot3;
+            @HandSlot3.canceled += instance.OnHandSlot3;
         }
 
         private void UnregisterCallbacks(IActionActions instance)
@@ -343,6 +421,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @HandSlot1.started -= instance.OnHandSlot1;
+            @HandSlot1.performed -= instance.OnHandSlot1;
+            @HandSlot1.canceled -= instance.OnHandSlot1;
+            @HandSlot2.started -= instance.OnHandSlot2;
+            @HandSlot2.performed -= instance.OnHandSlot2;
+            @HandSlot2.canceled -= instance.OnHandSlot2;
+            @HandSlot3.started -= instance.OnHandSlot3;
+            @HandSlot3.performed -= instance.OnHandSlot3;
+            @HandSlot3.canceled -= instance.OnHandSlot3;
         }
 
         public void RemoveCallbacks(IActionActions instance)
@@ -368,5 +455,8 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnToggleInventory(InputAction.CallbackContext context);
         void OnRotateOnSelect(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnHandSlot1(InputAction.CallbackContext context);
+        void OnHandSlot2(InputAction.CallbackContext context);
+        void OnHandSlot3(InputAction.CallbackContext context);
     }
 }

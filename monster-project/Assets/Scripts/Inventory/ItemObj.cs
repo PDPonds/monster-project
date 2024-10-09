@@ -91,7 +91,7 @@ public class ItemObj : MonoBehaviour
             }
             else
             {
-                return;
+                transform.SetParent(PlayerUI.Instance.itemParent);
             }
 
             itemObjData.pressSlotsXY.Clear();
@@ -180,7 +180,7 @@ public class ItemObj : MonoBehaviour
 
     }
 
-    public void UnSelected(HandSlotUI handSlot)
+    public void UnSelected(EquipmentSlotUI handSlot)
     {
         visual.raycastTarget = true;
         amountText.raycastTarget = true;

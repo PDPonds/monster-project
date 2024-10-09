@@ -27,7 +27,16 @@ public class PlayerUI : Singleton<PlayerUI>
     [Header("- Item Obj")]
     public Transform storageParent;
 
-    [Header("Test")]
+    [Header("===== Equipment =====")]
+    [Header("- Hand Slot")]
+    [SerializeField] Vector2 handSlotOffset;
+    public List<Transform> handSlots = new List<Transform>();
+
+    [Header("- Equipment Slot")]
+    [SerializeField] Vector2 equipmentSlotOffset;
+    public List<Transform> equipmentSlots = new List<Transform>();
+
+    [Header("===== Test =====")]
     public ItemSO testItem;
     [HideInInspector] public GameObject curItemObjSelected;
 
@@ -234,6 +243,32 @@ public class PlayerUI : Singleton<PlayerUI>
         itemIndex = -1;
         hasAmount = 0;
         return false;
+    }
+
+    public void SetupEquipmentAndHandSlot()
+    {
+        Vector3 slot0Pos = slotParent.GetChild(0).GetComponent<Transform>().localPosition;
+
+        if (handSlots.Count > 0)
+        {
+            for (int i = 0; i < handSlots.Count; i++)
+            {
+                RectTransform rect = handSlots[i].GetComponent<RectTransform>();
+                Vector3 pos = rect.localPosition + new Vector3(handSlotOffset.x, handSlotOffset.y + slot0Pos.y, 0);
+                rect.anchoredPosition = pos;
+            }
+        }
+
+        if (equipmentSlots.Count > 0)
+        {
+            for (int i = 0; i < equipmentSlots.Count; i++)
+            {
+                RectTransform rect = equipmentSlots[i].GetComponent<RectTransform>();
+                Vector3 pos = rect.localPosition + new Vector3(equipmentSlotOffset.x + slot0Pos.x, equipmentSlotOffset.y, 0);
+                rect.anchoredPosition = pos;
+            }
+        }
+
     }
 
     #endregion

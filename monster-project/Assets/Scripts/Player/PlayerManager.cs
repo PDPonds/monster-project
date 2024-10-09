@@ -68,6 +68,7 @@ public class PlayerManager : Singleton<PlayerManager>
     private void Start()
     {
         inventorySlots = PlayerUI.Instance.InitInventorySlot(inventoryWidth, inventoryHeight);
+        PlayerUI.Instance.SetupEquipmentAndHandSlot();
     }
 
     private void Update()
@@ -462,7 +463,7 @@ public class ItemObjData
     public int amount;
 
     public List<Vector2Int> pressSlotsXY = new List<Vector2Int>();
-    public HandSlotUI handSlot;
+    public EquipmentSlotUI handSlot;
 
     public bool isRotate;
 

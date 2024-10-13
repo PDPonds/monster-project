@@ -45,7 +45,7 @@ public class PlayerManager : Singleton<PlayerManager>
     #region Interact
 
     [Header("===== Interact =====")]
-    [SerializeField] Vector3 interactOffset;
+    [SerializeField] float interactOffset;
     [SerializeField] float interactSize;
     [SerializeField] LayerMask interactMask;
     IInteracable curIInteractObject;
@@ -56,6 +56,10 @@ public class PlayerManager : Singleton<PlayerManager>
     [Header("===== Storage =====")]
     [HideInInspector] public Storage curStorage;
     [HideInInspector] public SlotNode[,] storageSlots;
+    #endregion
+
+    #region In Hand Slot
+    [HideInInspector] public EquipmentSlotUI curSelectedSlot;
     #endregion
 
     private void Awake()
@@ -112,7 +116,8 @@ public class PlayerManager : Singleton<PlayerManager>
     #region Aim
     public void ToggleAim()
     {
-        if (IsPhase(PlayerPhase.Normal))
+        ItemObj item = GetCurSelectItem();
+        if (IsPhase(PlayerPhase.Normal) && item != null && item.itemObjData.item is WeaponItem weapon)
         {
             isAim = !isAim;
             if (isAim)
@@ -367,7 +372,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     void InteractHandle()
     {
-        Collider[] cols = Physics.OverlapSphere(transform.position + interactOffset, interactSize, interactMask);
+        Collider[] cols = Physics.OverlapSphere(transform.position + transform.forward * interactOffset, interactSize, interactMask);
         if (cols.Length > 0)
         {
             if (cols[0].TryGetComponent<IInteracable>(out IInteracable interacable))
@@ -402,7 +407,7 @@ public class PlayerManager : Singleton<PlayerManager>
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + interactOffset, interactSize);
+        Gizmos.DrawWireSphere(transform.position + transform.forward * interactOffset, interactSize);
     }
 
     #endregion
@@ -437,6 +442,17 @@ public class PlayerManager : Singleton<PlayerManager>
         return this.phase == phase;
     }
 
+    #endregion
+
+    #region In Hand Slot
+    public ItemObj GetCurSelectItem()
+    {
+        if (curSelectedSlot == null) return null;
+        if (curSelectedSlot.transform.childCount == 0) return null;
+
+        ItemObj item = curSelectedSlot.transform.GetChild(0).GetComponent<ItemObj>();
+        return item;
+    }
     #endregion
 
 }

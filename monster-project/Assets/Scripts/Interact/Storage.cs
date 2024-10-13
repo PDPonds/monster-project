@@ -1,15 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.Progress;
 
 public class Storage : MonoBehaviour, IInteracable
 {
     public int storageWidth;
     public int storageHeight;
-    /*[hideininspector]*/
-    public List<ItemObjData> storageDatas = new List<ItemObjData>();
+    [HideInInspector] public List<ItemObjData> storageDatas = new List<ItemObjData>();
 
     public void Interact()
     {
@@ -17,6 +14,7 @@ public class Storage : MonoBehaviour, IInteracable
         {
             PlayerManager.Instance.curStorage = this;
             PlayerUI.Instance.ShowStorage(storageWidth, storageHeight);
+            PlayerUI.Instance.inGameHandVisualParent.gameObject.SetActive(false);
             InitItemInStorage();
         }
     }

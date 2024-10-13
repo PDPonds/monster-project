@@ -1,11 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class PlayerUI : Singleton<PlayerUI>
 {
+    [Header("===== Hand =====")]
+    public Transform inGameHandVisualParent;
+    [SerializeField] Image slot1Visual;
+    [SerializeField] TextMeshProUGUI slot1AmountText;
+    [SerializeField] GameObject slot1Border;
+    [SerializeField] Image slot2Visual;
+    [SerializeField] TextMeshProUGUI slot2AmountText;
+    [SerializeField] GameObject slot2Border;
+    [SerializeField] Image slot3Visual;
+    [SerializeField] TextMeshProUGUI slot3AmountText;
+    [SerializeField] GameObject slot3Border;
+
     [Header("===== Interact =====")]
     [SerializeField] GameObject interactCondition;
 
@@ -110,10 +124,14 @@ public class PlayerUI : Singleton<PlayerUI>
                 HideStorage();
                 PlayerManager.Instance.SwitchPhase(PlayerPhase.Normal);
             }
+
+            inGameHandVisualParent.gameObject.SetActive(true);
+            UpdateInGameHandVisual();
         }
         else
         {
             inventoryTab.gameObject.SetActive(true);
+            inGameHandVisualParent.gameObject.SetActive(false);
             PlayerManager.Instance.SwitchPhase(PlayerPhase.UIShow);
         }
     }
@@ -202,6 +220,27 @@ public class PlayerUI : Singleton<PlayerUI>
                 items.Add(itemObj);
             }
         }
+
+        for (int i = 0; i < handSlots.Count; i++)
+        {
+            Transform slot = handSlots[i].transform;
+            if (slot.transform.childCount > 0)
+            {
+                ItemObj item = slot.GetChild(i).GetComponent<ItemObj>();
+                items.Add(item);
+            }
+        }
+
+        for (int i = 0; i < equipmentSlots.Count; i++)
+        {
+            Transform slot = equipmentSlots[i].transform;
+            if (slot.transform.childCount > 0)
+            {
+                ItemObj item = slot.GetChild(i).GetComponent<ItemObj>();
+                items.Add(item);
+            }
+        }
+
         return items;
     }
 
@@ -221,6 +260,53 @@ public class PlayerUI : Singleton<PlayerUI>
             }
         }
         itemIndex = -1;
+        return false;
+    }
+
+    public bool HasItem(int handIndex, out ItemObj itemObj)
+    {
+        if (handIndex < 1 || handIndex > 3)
+        {
+            itemObj = null;
+            return false;
+        }
+
+        Transform slot = handSlots[handIndex - 1].transform;
+        if (slot.transform.childCount > 0)
+        {
+            ItemObj item = slot.GetChild(0).GetComponent<ItemObj>();
+            itemObj = item;
+            return true;
+        }
+
+        itemObj = null;
+        return false;
+    }
+
+    public bool HasItem(EquipmentSlotType type, out ItemObj itemObj)
+    {
+        if (type == EquipmentSlotType.Weapon)
+        {
+            itemObj = null;
+            return false;
+        }
+
+        for (int i = 0; i < equipmentSlots.Count; i++)
+        {
+            Transform slot = equipmentSlots[i].transform;
+            EquipmentSlotUI ui = slot.GetComponent<EquipmentSlotUI>();
+            if (ui.equipmentSlotType == type)
+            {
+                if (ui.transform.childCount > 0)
+                {
+                    ItemObj item = ui.transform.GetChild(0).GetComponent<ItemObj>();
+                    itemObj = item;
+                    return true;
+                }
+            }
+        }
+
+        itemObj = null;
         return false;
     }
 
@@ -271,6 +357,55 @@ public class PlayerUI : Singleton<PlayerUI>
 
     }
 
+    public void UpdateInGameHandVisual()
+    {
+        if (HasItem(1, out ItemObj itemObj1))
+        {
+            slot1Visual.gameObject.SetActive(true);
+            slot1AmountText.gameObject.SetActive(true);
+            ItemSO item = itemObj1.itemObjData.item;
+            int amount = itemObj1.itemObjData.amount;
+            slot1Visual.sprite = item.itemSprite;
+            slot1AmountText.text = $"{amount}";
+        }
+        else
+        {
+            slot1Visual.gameObject.SetActive(false);
+            slot1AmountText.gameObject.SetActive(false);
+        }
+
+        if (HasItem(2, out ItemObj itemObj2))
+        {
+            slot2Visual.gameObject.SetActive(true);
+            slot2AmountText.gameObject.SetActive(true);
+            ItemSO item = itemObj2.itemObjData.item;
+            int amount = itemObj2.itemObjData.amount;
+            slot2Visual.sprite = item.itemSprite;
+            slot2AmountText.text = $"{amount}";
+        }
+        else
+        {
+            slot2Visual.gameObject.SetActive(false);
+            slot2AmountText.gameObject.SetActive(false);
+        }
+
+        if (HasItem(3, out ItemObj itemObj3))
+        {
+            slot3Visual.gameObject.SetActive(true);
+            slot3AmountText.gameObject.SetActive(true);
+            ItemSO item = itemObj3.itemObjData.item;
+            int amount = itemObj3.itemObjData.amount;
+            slot3Visual.sprite = item.itemSprite;
+            slot3AmountText.text = $"{amount}";
+        }
+        else
+        {
+            slot3Visual.gameObject.SetActive(false);
+            slot3AmountText.gameObject.SetActive(false);
+        }
+
+    }
+
     #endregion
 
     #region Interact
@@ -304,6 +439,31 @@ public class PlayerUI : Singleton<PlayerUI>
     }
 
     #endregion
+
+    public void SelectItemInHand(int index)
+    {
+        slot1Border.gameObject.SetActive(false);
+        slot2Border.gameObject.SetActive(false);
+        slot3Border.gameObject.SetActive(false);
+
+        if (index == 1) slot1Border.gameObject.SetActive(true);
+        else if (index == 2) slot2Border.gameObject.SetActive(true);
+        else if (index == 3) slot3Border.gameObject.SetActive(true);
+
+        EquipmentSlotUI slot = handSlots[index - 1].GetComponent<EquipmentSlotUI>();
+        PlayerManager.Instance.curSelectedSlot = slot;
+
+        if (HasItem(index, out ItemObj item))
+        {
+            //Init Item In Hand
+        }
+
+    }
+
+    private void Start()
+    {
+        SelectItemInHand(1);
+    }
 
     private void Update()
     {

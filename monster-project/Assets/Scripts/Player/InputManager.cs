@@ -18,6 +18,11 @@ public class InputManager : MonoBehaviour
             input.action.ToggleInventory.performed += i => PlayerUI.Instance.ToggleInventory();
             input.action.RotateOnSelect.performed += i => PlayerUI.Instance.RotateSelectedObject();
             input.action.Interact.performed += i => PlayerManager.Instance.InteractClick();
+
+            input.action.HandSlot1.performed += i => PlayerUI.Instance.SelectItemInHand(1);
+            input.action.HandSlot2.performed += i => PlayerUI.Instance.SelectItemInHand(2);
+            input.action.HandSlot3.performed += i => PlayerUI.Instance.SelectItemInHand(3);
+
         }
 
         input.Enable();

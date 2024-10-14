@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public enum PlayerPhase
 {
-    Normal, UIShow, Dashing
+    Normal, UIShow
 }
 
 public class PlayerManager : Singleton<PlayerManager>
@@ -64,7 +64,12 @@ public class PlayerManager : Singleton<PlayerManager>
     [HideInInspector] public EquipmentSlotUI curSelectedSlot;
     #endregion
 
-    #region Dashing
+    #region Dash
+    [Header("===== Dash =====")]
+    [SerializeField] float dashDelay;
+    [SerializeField] float dashTime;
+    [SerializeField] float dashForce;
+    float curDashDelay;
     bool isDashing;
     #endregion
 
@@ -103,6 +108,7 @@ public class PlayerManager : Singleton<PlayerManager>
         UpdatePhase();
 
         DecreaseAttackDelay();
+        DecreaseDashDelay();
     }
 
     #region Mouse
@@ -446,8 +452,6 @@ public class PlayerManager : Singleton<PlayerManager>
                 break;
             case PlayerPhase.UIShow:
                 break;
-            case PlayerPhase.Dashing:
-                break;
         }
     }
 
@@ -458,8 +462,6 @@ public class PlayerManager : Singleton<PlayerManager>
             case PlayerPhase.Normal:
                 break;
             case PlayerPhase.UIShow:
-                break;
-            case PlayerPhase.Dashing:
                 break;
         }
     }
@@ -496,6 +498,28 @@ public class PlayerManager : Singleton<PlayerManager>
 
         yield return null;
         isDashing = false;
+    }
+
+    public void DashPerformed()
+    {
+        if (!isDashing && curDashDelay <= 0 && IsPhase(PlayerPhase.Normal))
+        {
+            anim.Play("Dash");
+            StartCoroutine(Dash(transform.forward, dashForce, dashTime));
+            curDashDelay = dashDelay;
+        }
+    }
+
+    void DecreaseDashDelay()
+    {
+        if (curDashDelay > 0)
+        {
+            curDashDelay -= Time.deltaTime;
+            if (curDashDelay < 0)
+            {
+                curDashDelay = 0;
+            }
+        }
     }
 
     #endregion

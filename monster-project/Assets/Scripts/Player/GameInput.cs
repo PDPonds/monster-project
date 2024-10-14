@@ -55,6 +55,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""e980fa48-6b29-4b42-bced-f5c50d302b53"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Aim"",
                     ""type"": ""Button"",
                     ""id"": ""36ede9aa-cd9f-4686-917c-b4eeb79f5686"",
@@ -283,6 +292,17 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4ca1d533-1559-4edb-b39b-c361d67341f3"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -294,6 +314,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_action_PlayerMoveInput = m_action.FindAction("PlayerMoveInput", throwIfNotFound: true);
         m_action_Attack = m_action.FindAction("Attack", throwIfNotFound: true);
         m_action_MousePos = m_action.FindAction("MousePos", throwIfNotFound: true);
+        m_action_Dash = m_action.FindAction("Dash", throwIfNotFound: true);
         m_action_Aim = m_action.FindAction("Aim", throwIfNotFound: true);
         m_action_ToggleInventory = m_action.FindAction("ToggleInventory", throwIfNotFound: true);
         m_action_RotateOnSelect = m_action.FindAction("RotateOnSelect", throwIfNotFound: true);
@@ -365,6 +386,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_action_PlayerMoveInput;
     private readonly InputAction m_action_Attack;
     private readonly InputAction m_action_MousePos;
+    private readonly InputAction m_action_Dash;
     private readonly InputAction m_action_Aim;
     private readonly InputAction m_action_ToggleInventory;
     private readonly InputAction m_action_RotateOnSelect;
@@ -379,6 +401,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @PlayerMoveInput => m_Wrapper.m_action_PlayerMoveInput;
         public InputAction @Attack => m_Wrapper.m_action_Attack;
         public InputAction @MousePos => m_Wrapper.m_action_MousePos;
+        public InputAction @Dash => m_Wrapper.m_action_Dash;
         public InputAction @Aim => m_Wrapper.m_action_Aim;
         public InputAction @ToggleInventory => m_Wrapper.m_action_ToggleInventory;
         public InputAction @RotateOnSelect => m_Wrapper.m_action_RotateOnSelect;
@@ -404,6 +427,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @MousePos.started += instance.OnMousePos;
             @MousePos.performed += instance.OnMousePos;
             @MousePos.canceled += instance.OnMousePos;
+            @Dash.started += instance.OnDash;
+            @Dash.performed += instance.OnDash;
+            @Dash.canceled += instance.OnDash;
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
@@ -438,6 +464,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @MousePos.started -= instance.OnMousePos;
             @MousePos.performed -= instance.OnMousePos;
             @MousePos.canceled -= instance.OnMousePos;
+            @Dash.started -= instance.OnDash;
+            @Dash.performed -= instance.OnDash;
+            @Dash.canceled -= instance.OnDash;
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
@@ -481,6 +510,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnPlayerMoveInput(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnMousePos(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnToggleInventory(InputAction.CallbackContext context);
         void OnRotateOnSelect(InputAction.CallbackContext context);

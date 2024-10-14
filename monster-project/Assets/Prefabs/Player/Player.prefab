@@ -3268,13 +3268,16 @@ MonoBehaviour:
   curStorage: {fileID: 0}
   curSelectSlotIndex: 0
   curSelectedSlot: {fileID: 0}
+  dashDelay: 0.5
+  dashTime: 0.25
+  dashForce: 2
   autoLockRange: 2
   autoLockeMask:
     serializedVersion: 2
     m_Bits: 512
-  attackDelay: 2
-  attackTime: 0.1
-  attackDashForce: 3
+  attackDelay: 0.5
+  attackTime: 0.25
+  attackDashForce: 1
 --- !u!114 &3433925039257564313
 MonoBehaviour:
   m_ObjectHideFlags: 0

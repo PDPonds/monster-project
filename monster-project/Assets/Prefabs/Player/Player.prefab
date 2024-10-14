@@ -3249,6 +3249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
+  anim: {fileID: 0}
   isAim: 0
   mousePos: {x: 0, y: 0}
   mousePosMask:
@@ -3265,7 +3266,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   curStorage: {fileID: 0}
+  curSelectSlotIndex: 0
   curSelectedSlot: {fileID: 0}
+  autoLockRange: 2
+  autoLockeMask:
+    serializedVersion: 2
+    m_Bits: 512
+  attackDelay: 2
+  attackTime: 0.1
+  attackDashForce: 3
 --- !u!114 &3433925039257564313
 MonoBehaviour:
   m_ObjectHideFlags: 0

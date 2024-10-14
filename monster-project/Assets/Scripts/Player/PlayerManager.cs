@@ -1,19 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public enum PlayerPhase
 {
-    Normal, UIShow
+    Normal, UIShow, Dashing
 }
 
 public class PlayerManager : Singleton<PlayerManager>
 {
     [HideInInspector] public Rigidbody rb;
     CapsuleCollider col;
-    Animator anim;
+    [HideInInspector] public Animator anim;
 
     #region Phase
     PlayerPhase phase;
@@ -63,6 +64,23 @@ public class PlayerManager : Singleton<PlayerManager>
     [HideInInspector] public EquipmentSlotUI curSelectedSlot;
     #endregion
 
+    #region Dashing
+    bool isDashing;
+    #endregion
+
+    #region Attack
+    [Header("===== Attack =====")]
+    [Header("- Melee")]
+    [SerializeField] float autoLockRange;
+    [SerializeField] LayerMask autoLockeMask;
+    [SerializeField] float attackDelay;
+    [SerializeField] float attackTime;
+    [SerializeField] float attackDashForce;
+    bool canAttack = true;
+    float curAttackDelay;
+    int attackCount;
+    #endregion
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -83,6 +101,8 @@ public class PlayerManager : Singleton<PlayerManager>
         AnimHandle();
         InteractHandle();
         UpdatePhase();
+
+        DecreaseAttackDelay();
     }
 
     #region Mouse
@@ -222,7 +242,15 @@ public class PlayerManager : Singleton<PlayerManager>
 
     bool CanMove()
     {
-        return !IsPhase(PlayerPhase.UIShow);
+        return !IsPhase(PlayerPhase.UIShow) && !isDashing;
+    }
+
+    public void LookAt(Vector3 pos)
+    {
+        Vector3 dir = (pos - transform.position).normalized;
+        float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
     }
 
     #endregion
@@ -405,12 +433,6 @@ public class PlayerManager : Singleton<PlayerManager>
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + transform.forward * interactOffset, interactSize);
-    }
-
     #endregion
 
     #region Phase
@@ -424,6 +446,8 @@ public class PlayerManager : Singleton<PlayerManager>
                 break;
             case PlayerPhase.UIShow:
                 break;
+            case PlayerPhase.Dashing:
+                break;
         }
     }
 
@@ -434,6 +458,8 @@ public class PlayerManager : Singleton<PlayerManager>
             case PlayerPhase.Normal:
                 break;
             case PlayerPhase.UIShow:
+                break;
+            case PlayerPhase.Dashing:
                 break;
         }
     }
@@ -455,6 +481,105 @@ public class PlayerManager : Singleton<PlayerManager>
         return item;
     }
     #endregion
+
+    #region Dash
+
+    IEnumerator Dash(Vector3 dir, float dashForce, float dashTime)
+    {
+        float startTime = Time.time;
+        while (Time.time < startTime + dashTime)
+        {
+            isDashing = true;
+            rb.AddForce(dir * dashForce, ForceMode.Impulse);
+            yield return null;
+        }
+
+        yield return null;
+        isDashing = false;
+    }
+
+    #endregion
+
+    #region Attack
+
+    void DecreaseAttackDelay()
+    {
+        if (curAttackDelay > 0)
+        {
+            curAttackDelay -= Time.deltaTime;
+            if (curAttackDelay < 0)
+            {
+                canAttack = true;
+            }
+        }
+    }
+
+    public void Attack()
+    {
+        if (IsPhase(PlayerPhase.Normal))
+        {
+            ItemObj item = GetCurSelectItem();
+
+            if (item == null) return;
+
+            if (item.itemObjData.item is MeleeItem melee && canAttack)
+            {
+                if (attackCount % 2 == 0) anim.Play("AttackCombo1");
+                else anim.Play("AttackCombo2");
+
+                attackCount++;
+                if (attackCount == 2) attackCount = 0;
+
+                TryAutoLock();
+
+            }
+            else if (item.itemObjData.item is GunItem gun)
+            {
+                if (isAim)
+                {
+                    Debug.Log("Shoot");
+                }
+            }
+
+        }
+    }
+
+    void TryAutoLock()
+    {
+        Collider[] cols = Physics.OverlapSphere(transform.position, autoLockRange, autoLockeMask);
+        Vector3 dir = Vector3.zero;
+
+        if (cols.Length > 0)
+        {
+            Collider col = cols[0];
+            dir = col.transform.position - transform.position;
+            dir.Normalize();
+            LookAt(col.transform.position);
+        }
+        else
+        {
+            dir = GetDirToMouse();
+            LookAt(GetWorldPosFormMouse());
+        }
+
+
+        StartCoroutine(Dash(dir, attackDashForce, attackTime));
+
+        curAttackDelay = attackDelay;
+        canAttack = false;
+    }
+
+    #endregion
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position + transform.forward * interactOffset, interactSize);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, autoLockRange);
+    }
 
 }
 

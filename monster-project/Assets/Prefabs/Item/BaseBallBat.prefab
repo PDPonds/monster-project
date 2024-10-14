@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5555738358199924246}
   - component: {fileID: 1297045861587045520}
   - component: {fileID: 5748531125492304242}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2492286976248489160}
   - component: {fileID: 7468273657137913019}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BaseBallBat
   m_TagString: Untagged
   m_Icon: {fileID: 0}

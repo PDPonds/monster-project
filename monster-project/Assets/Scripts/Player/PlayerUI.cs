@@ -127,11 +127,11 @@ public class PlayerUI : Singleton<PlayerUI>
                 inventoryTab.gameObject.SetActive(false);
                 HideStorage();
                 PlayerManager.Instance.SwitchPhase(PlayerPhase.Normal);
-            }
 
-            inGameHandVisualParent.gameObject.SetActive(true);
-            UpdateInGameHandVisual();
-            SelectItemInHand(PlayerManager.Instance.curSelectSlotIndex);
+                inGameHandVisualParent.gameObject.SetActive(true);
+                UpdateInGameHandVisual();
+                SelectItemInHand(PlayerManager.Instance.curSelectSlotIndex);
+            }
         }
         else
         {
@@ -486,6 +486,11 @@ public class PlayerUI : Singleton<PlayerUI>
                 objRight.transform.localPosition = item.spawnRightPos;
                 objRight.transform.localRotation = Quaternion.Euler(item.rotationRight);
                 break;
+        }
+
+        if (item is MeleeItem meleeItem)
+        {
+            PlayerManager.Instance.anim.runtimeAnimatorController = meleeItem.attackOverride;
         }
 
     }

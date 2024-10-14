@@ -23,6 +23,8 @@ public class InputManager : MonoBehaviour
             input.action.HandSlot2.performed += i => PlayerUI.Instance.SelectItemInHand(2);
             input.action.HandSlot3.performed += i => PlayerUI.Instance.SelectItemInHand(3);
 
+            input.action.Attack.performed += i => PlayerManager.Instance.Attack();
+
         }
 
         input.Enable();

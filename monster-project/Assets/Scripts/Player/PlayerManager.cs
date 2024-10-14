@@ -59,6 +59,7 @@ public class PlayerManager : Singleton<PlayerManager>
     #endregion
 
     #region In Hand Slot
+    [HideInInspector] public int curSelectSlotIndex;
     [HideInInspector] public EquipmentSlotUI curSelectedSlot;
     #endregion
 
@@ -117,7 +118,7 @@ public class PlayerManager : Singleton<PlayerManager>
     public void ToggleAim()
     {
         ItemObj item = GetCurSelectItem();
-        if (IsPhase(PlayerPhase.Normal) && item != null && item.itemObjData.item is WeaponItem weapon)
+        if (IsPhase(PlayerPhase.Normal) && item != null && item.itemObjData.item is GunItem)
         {
             isAim = !isAim;
             if (isAim)

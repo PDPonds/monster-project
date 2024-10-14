@@ -50,6 +50,10 @@ public class PlayerUI : Singleton<PlayerUI>
     [SerializeField] Vector2 equipmentSlotOffset;
     public List<Transform> equipmentSlots = new List<Transform>();
 
+    [Header("- In Hand Item")]
+    [SerializeField] Transform leftHandParent;
+    [SerializeField] Transform rightHandParent;
+
     [Header("===== Test =====")]
     public ItemSO testItem;
     [HideInInspector] public GameObject curItemObjSelected;
@@ -127,6 +131,7 @@ public class PlayerUI : Singleton<PlayerUI>
 
             inGameHandVisualParent.gameObject.SetActive(true);
             UpdateInGameHandVisual();
+            SelectItemInHand(PlayerManager.Instance.curSelectSlotIndex);
         }
         else
         {
@@ -442,6 +447,11 @@ public class PlayerUI : Singleton<PlayerUI>
 
     public void SelectItemInHand(int index)
     {
+        if (index < 1 || index > 3) return;
+
+        if (leftHandParent.childCount > 0) for (int i = 0; i < leftHandParent.childCount; i++) { Destroy(leftHandParent.GetChild(i).gameObject); }
+        if (rightHandParent.childCount > 0) for (int i = 0; i < rightHandParent.childCount; i++) { Destroy(rightHandParent.GetChild(i).gameObject); }
+
         slot1Border.gameObject.SetActive(false);
         slot2Border.gameObject.SetActive(false);
         slot3Border.gameObject.SetActive(false);
@@ -452,10 +462,30 @@ public class PlayerUI : Singleton<PlayerUI>
 
         EquipmentSlotUI slot = handSlots[index - 1].GetComponent<EquipmentSlotUI>();
         PlayerManager.Instance.curSelectedSlot = slot;
+        PlayerManager.Instance.curSelectSlotIndex = index;
 
         if (HasItem(index, out ItemObj item))
         {
-            //Init Item In Hand
+            UseableItem useableItem = item.itemObjData.item as UseableItem;
+            InitItemOnHand(useableItem);
+        }
+
+    }
+
+    void InitItemOnHand(UseableItem item)
+    {
+        switch (item.holdingSide)
+        {
+            case HandSide.Left:
+                GameObject objLeft = Instantiate(item.prefab, leftHandParent);
+                objLeft.transform.localPosition = item.spawnLeftPos;
+                objLeft.transform.localRotation = Quaternion.Euler(item.rotationLeft);
+                break;
+            case HandSide.Right:
+                GameObject objRight = Instantiate(item.prefab, rightHandParent);
+                objRight.transform.localPosition = item.spawnRightPos;
+                objRight.transform.localRotation = Quaternion.Euler(item.rotationRight);
+                break;
         }
 
     }

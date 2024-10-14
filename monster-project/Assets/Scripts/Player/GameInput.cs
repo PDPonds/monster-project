@@ -37,6 +37,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""3c606bc6-f08b-46c0-80af-c90cb2581d7f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""MousePos"",
                     ""type"": ""Value"",
                     ""id"": ""9cac3eea-a1dc-4120-b005-1cc09f434900"",
@@ -263,6 +272,17 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""HandSlot3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2461a521-2726-478d-8486-45cf89c4c908"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -272,6 +292,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         // action
         m_action = asset.FindActionMap("action", throwIfNotFound: true);
         m_action_PlayerMoveInput = m_action.FindAction("PlayerMoveInput", throwIfNotFound: true);
+        m_action_Attack = m_action.FindAction("Attack", throwIfNotFound: true);
         m_action_MousePos = m_action.FindAction("MousePos", throwIfNotFound: true);
         m_action_Aim = m_action.FindAction("Aim", throwIfNotFound: true);
         m_action_ToggleInventory = m_action.FindAction("ToggleInventory", throwIfNotFound: true);
@@ -342,6 +363,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_action;
     private List<IActionActions> m_ActionActionsCallbackInterfaces = new List<IActionActions>();
     private readonly InputAction m_action_PlayerMoveInput;
+    private readonly InputAction m_action_Attack;
     private readonly InputAction m_action_MousePos;
     private readonly InputAction m_action_Aim;
     private readonly InputAction m_action_ToggleInventory;
@@ -355,6 +377,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         private @GameInput m_Wrapper;
         public ActionActions(@GameInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @PlayerMoveInput => m_Wrapper.m_action_PlayerMoveInput;
+        public InputAction @Attack => m_Wrapper.m_action_Attack;
         public InputAction @MousePos => m_Wrapper.m_action_MousePos;
         public InputAction @Aim => m_Wrapper.m_action_Aim;
         public InputAction @ToggleInventory => m_Wrapper.m_action_ToggleInventory;
@@ -375,6 +398,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @PlayerMoveInput.started += instance.OnPlayerMoveInput;
             @PlayerMoveInput.performed += instance.OnPlayerMoveInput;
             @PlayerMoveInput.canceled += instance.OnPlayerMoveInput;
+            @Attack.started += instance.OnAttack;
+            @Attack.performed += instance.OnAttack;
+            @Attack.canceled += instance.OnAttack;
             @MousePos.started += instance.OnMousePos;
             @MousePos.performed += instance.OnMousePos;
             @MousePos.canceled += instance.OnMousePos;
@@ -406,6 +432,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @PlayerMoveInput.started -= instance.OnPlayerMoveInput;
             @PlayerMoveInput.performed -= instance.OnPlayerMoveInput;
             @PlayerMoveInput.canceled -= instance.OnPlayerMoveInput;
+            @Attack.started -= instance.OnAttack;
+            @Attack.performed -= instance.OnAttack;
+            @Attack.canceled -= instance.OnAttack;
             @MousePos.started -= instance.OnMousePos;
             @MousePos.performed -= instance.OnMousePos;
             @MousePos.canceled -= instance.OnMousePos;
@@ -450,6 +479,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     public interface IActionActions
     {
         void OnPlayerMoveInput(InputAction.CallbackContext context);
+        void OnAttack(InputAction.CallbackContext context);
         void OnMousePos(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnToggleInventory(InputAction.CallbackContext context);

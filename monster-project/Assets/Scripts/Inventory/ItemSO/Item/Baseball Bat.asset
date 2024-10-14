@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d86d2e595fa9a214c8357f0a065647bc, type: 3}
+  m_Name: Baseball Bat
+  m_EditorClassIdentifier: 
+  itemName: Baseball Bat
+  itemSprite: {fileID: 21300000, guid: ade3428af29569c45812a3a8ef27f0fe, type: 3}
+  itemGridWidth: 5
+  itemGridHeight: 2
+  maxStack: 1
+  itemType: 0
+  holdingSide: 1
+  prefab: {fileID: 2368437685853480236, guid: c77f90ac77430f94cb8198270feec38e, type: 3}
+  spawnLeftPos: {x: 0, y: 0, z: 0.05}
+  rotationLeft: {x: 0, y: 0, z: 90}
+  spawnRightPos: {x: 0, y: 0, z: 0.05}
+  rotationRight: {x: 0, y: 0, z: 90}
+  usableItemType: 0
+  weaponType: 1
+  attackOverride: {fileID: 0}

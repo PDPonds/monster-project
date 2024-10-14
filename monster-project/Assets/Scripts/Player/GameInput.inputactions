@@ -15,6 +15,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "3c606bc6-f08b-46c0-80af-c90cb2581d7f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "MousePos",
                     "type": "Value",
                     "id": "9cac3eea-a1dc-4120-b005-1cc09f434900",
@@ -239,6 +248,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "HandSlot3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2461a521-2726-478d-8486-45cf89c4c908",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

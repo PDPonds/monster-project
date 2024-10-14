@@ -6,6 +6,7 @@ using UnityEngine;
 public class MeleeItem : WeaponItem
 {
     [Header("===== Melee =====")]
+    public float knockbackForce;
     public AnimatorOverrideController attackOverride;
 
     public MeleeItem()

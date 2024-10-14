@@ -26,4 +26,5 @@ MonoBehaviour:
   rotationRight: {x: 0, y: 0, z: 90}
   usableItemType: 0
   weaponType: 1
+  knockbackForce: 5
   attackOverride: {fileID: 22100000, guid: ef7d946119e241f499ea5ba76b834e2c, type: 2}

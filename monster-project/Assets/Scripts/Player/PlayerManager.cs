@@ -10,11 +10,13 @@ public enum PlayerPhase
     Normal, UIShow
 }
 
-public class PlayerManager : Singleton<PlayerManager>
+public class PlayerManager : Singleton<PlayerManager>, ICombatable
 {
     [HideInInspector] public Rigidbody rb;
     CapsuleCollider col;
     [HideInInspector] public Animator anim;
+
+    public int HP { get; set; }
 
     #region Phase
     PlayerPhase phase;
@@ -554,7 +556,7 @@ public class PlayerManager : Singleton<PlayerManager>
                 attackCount++;
                 if (attackCount == 2) attackCount = 0;
 
-                TryAutoLock();
+                TryAutoLock(melee);
 
             }
             else if (item.itemObjData.item is GunItem gun)
@@ -568,7 +570,7 @@ public class PlayerManager : Singleton<PlayerManager>
         }
     }
 
-    void TryAutoLock()
+    void TryAutoLock(MeleeItem melee)
     {
         Collider[] cols = Physics.OverlapSphere(transform.position, autoLockRange, autoLockeMask);
         Vector3 dir = Vector3.zero;
@@ -579,6 +581,12 @@ public class PlayerManager : Singleton<PlayerManager>
             dir = col.transform.position - transform.position;
             dir.Normalize();
             LookAt(col.transform.position);
+
+            if (col.TryGetComponent<ICombatable>(out ICombatable combatable))
+            {
+                combatable.TakeDamageFormMelee(1 , melee.knockbackForce);
+            }
+
         }
         else
         {
@@ -593,6 +601,28 @@ public class PlayerManager : Singleton<PlayerManager>
         canAttack = false;
     }
 
+    #endregion
+
+    #region Combat
+    public void Heal(int amount)
+    {
+
+    }
+
+    public void TakeDamageFormMelee(int damage, float knockbackForce)
+    {
+
+    }
+
+    public void TakeDamageFormGun(int damage)
+    {
+
+    }
+
+    public void Death()
+    {
+
+    }
     #endregion
 
 

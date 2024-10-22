@@ -64,6 +64,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""f510e212-db89-4b24-9a16-7c522913aa02"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Aim"",
                     ""type"": ""Button"",
                     ""id"": ""36ede9aa-cd9f-4686-917c-b4eeb79f5686"",
@@ -303,6 +312,17 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b53c3dd-96c3-4278-9e6c-448da382bcaf"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -315,6 +335,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_action_Attack = m_action.FindAction("Attack", throwIfNotFound: true);
         m_action_MousePos = m_action.FindAction("MousePos", throwIfNotFound: true);
         m_action_Dash = m_action.FindAction("Dash", throwIfNotFound: true);
+        m_action_Reload = m_action.FindAction("Reload", throwIfNotFound: true);
         m_action_Aim = m_action.FindAction("Aim", throwIfNotFound: true);
         m_action_ToggleInventory = m_action.FindAction("ToggleInventory", throwIfNotFound: true);
         m_action_RotateOnSelect = m_action.FindAction("RotateOnSelect", throwIfNotFound: true);
@@ -387,6 +408,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_action_Attack;
     private readonly InputAction m_action_MousePos;
     private readonly InputAction m_action_Dash;
+    private readonly InputAction m_action_Reload;
     private readonly InputAction m_action_Aim;
     private readonly InputAction m_action_ToggleInventory;
     private readonly InputAction m_action_RotateOnSelect;
@@ -402,6 +424,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @Attack => m_Wrapper.m_action_Attack;
         public InputAction @MousePos => m_Wrapper.m_action_MousePos;
         public InputAction @Dash => m_Wrapper.m_action_Dash;
+        public InputAction @Reload => m_Wrapper.m_action_Reload;
         public InputAction @Aim => m_Wrapper.m_action_Aim;
         public InputAction @ToggleInventory => m_Wrapper.m_action_ToggleInventory;
         public InputAction @RotateOnSelect => m_Wrapper.m_action_RotateOnSelect;
@@ -430,6 +453,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @Dash.started += instance.OnDash;
             @Dash.performed += instance.OnDash;
             @Dash.canceled += instance.OnDash;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
@@ -467,6 +493,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @Dash.started -= instance.OnDash;
             @Dash.performed -= instance.OnDash;
             @Dash.canceled -= instance.OnDash;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
@@ -511,6 +540,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnAttack(InputAction.CallbackContext context);
         void OnMousePos(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnReload(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnToggleInventory(InputAction.CallbackContext context);
         void OnRotateOnSelect(InputAction.CallbackContext context);

@@ -16,7 +16,17 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: 677a79ef41ec8054b9c118f78288d0ca, type: 3}
   itemGridWidth: 3
   itemGridHeight: 2
-  maxStack: 3
+  maxStack: 1
   itemType: 0
+  holdingSide: 0
+  prefab: {fileID: 2368437685853480236, guid: c77f90ac77430f94cb8198270feec38e, type: 3}
+  spawnLeftPos: {x: 0, y: 0, z: 0}
+  rotationLeft: {x: 0, y: 0, z: 0}
+  spawnRightPos: {x: 0, y: 0, z: 0}
+  rotationRight: {x: 0, y: 0, z: 0}
   usableItemType: 0
   weaponType: 0
+  fireRate: 0.25
+  ammoType: {fileID: 11400000, guid: ad2d0321578082d4cbed211384720a56, type: 2}
+  maxAmmoInMag: 12
+  reloadDuration: 3

@@ -54,9 +54,13 @@ public class PlayerUI : Singleton<PlayerUI>
     [SerializeField] Transform leftHandParent;
     [SerializeField] Transform rightHandParent;
 
+    [HideInInspector] public GameObject curItemObjSelected;
+
+    [Header("===== Reload =====")]
+    public Image reloadImg;
+
     [Header("===== Test =====")]
     public ItemSO testItem;
-    [HideInInspector] public GameObject curItemObjSelected;
 
     public SlotNode[,] InitInventorySlot(int width, int height)
     {
@@ -200,6 +204,66 @@ public class PlayerUI : Singleton<PlayerUI>
 
     }
 
+    public void TryRemoveItem(ItemSO item, int amount)
+    {
+        if (!HasItemCountForRemove(item, amount)) return;
+
+        List<ItemObj> allItems = GetItemInInventory();
+        if (allItems.Count == 0 || allItems == null) return;
+
+        int removeAmount = amount;
+
+        for (int i = 0; i < allItems.Count; i++)
+        {
+            if (allItems[i].itemObjData.item == item)
+            {
+                int slotsAmount = allItems[i].itemObjData.amount;
+                if (removeAmount <= slotsAmount)
+                {
+                    allItems[i].RemoveItemAmount(removeAmount);
+                    return;
+                }
+                else
+                {
+                    removeAmount = slotsAmount;
+                    int remainingAmount = amount - slotsAmount;
+                    allItems[i].RemoveItemAmount(removeAmount);
+                    removeAmount = remainingAmount;
+                }
+
+            }
+        }
+    }
+
+    public bool HasItemCountForRemove(ItemSO item, int count)
+    {
+        int allItemCount = GetItemCountInInventory(item);
+
+        if (allItemCount == 0) return false;
+
+        if (allItemCount >= count) return true;
+        else return false;
+    }
+
+    public int GetItemCountInInventory(ItemSO item)
+    {
+        int count = 0;
+        List<ItemObj> allItems = GetItemInInventory();
+
+        if (allItems.Count > 0)
+        {
+            for (int i = 0; i < allItems.Count; i++)
+            {
+                if (allItems[i].itemObjData.item == item)
+                {
+                    count += allItems[i].itemObjData.amount;
+                }
+            }
+        }
+
+        return count;
+    }
+
     public bool HasItemObjSelected()
     {
         return curItemObjSelected != null;
@@ -265,6 +329,19 @@ public class PlayerUI : Singleton<PlayerUI>
             }
         }
         itemIndex = -1;
+        return false;
+    }
+
+    public bool HasItem(ItemSO item, out ItemObj itemObj)
+    {
+        if (HasItem(item, out int index))
+        {
+            List<ItemObj> itemObjs = GetItemInInventory();
+            itemObj = itemObjs[index];
+            return true;
+        }
+
+        itemObj = null;
         return false;
     }
 
@@ -369,9 +446,27 @@ public class PlayerUI : Singleton<PlayerUI>
             slot1Visual.gameObject.SetActive(true);
             slot1AmountText.gameObject.SetActive(true);
             ItemSO item = itemObj1.itemObjData.item;
-            int amount = itemObj1.itemObjData.amount;
-            slot1Visual.sprite = item.itemSprite;
-            slot1AmountText.text = $"{amount}";
+            if (item is GunItem gun)
+            {
+                slot1Visual.sprite = item.itemSprite;
+                int max = gun.maxAmmoInMag;
+                int cur = itemObj1.curAmmoInMag;
+                slot1AmountText.text = $"{cur} / {max}";
+            }
+            else
+            {
+                int amount = itemObj1.itemObjData.amount;
+                if (amount > 1)
+                {
+                    slot1Visual.sprite = item.itemSprite;
+                    slot1AmountText.text = $"{amount}";
+                }
+                else
+                {
+                    slot1Visual.gameObject.SetActive(false);
+                    slot1AmountText.gameObject.SetActive(false);
+                }
+            }
         }
         else
         {
@@ -384,9 +479,27 @@ public class PlayerUI : Singleton<PlayerUI>
             slot2Visual.gameObject.SetActive(true);
             slot2AmountText.gameObject.SetActive(true);
             ItemSO item = itemObj2.itemObjData.item;
-            int amount = itemObj2.itemObjData.amount;
-            slot2Visual.sprite = item.itemSprite;
-            slot2AmountText.text = $"{amount}";
+            if (item is GunItem gun)
+            {
+                slot2Visual.sprite = item.itemSprite;
+                int max = gun.maxAmmoInMag;
+                int cur = itemObj2.curAmmoInMag;
+                slot2AmountText.text = $"{cur} / {max}";
+            }
+            else
+            {
+                int amount = itemObj2.itemObjData.amount;
+                if (amount > 1)
+                {
+                    slot2Visual.sprite = item.itemSprite;
+                    slot2AmountText.text = $"{amount}";
+                }
+                else
+                {
+                    slot2Visual.gameObject.SetActive(false);
+                    slot2AmountText.gameObject.SetActive(false);
+                }
+            }
         }
         else
         {
@@ -399,9 +512,27 @@ public class PlayerUI : Singleton<PlayerUI>
             slot3Visual.gameObject.SetActive(true);
             slot3AmountText.gameObject.SetActive(true);
             ItemSO item = itemObj3.itemObjData.item;
-            int amount = itemObj3.itemObjData.amount;
-            slot3Visual.sprite = item.itemSprite;
-            slot3AmountText.text = $"{amount}";
+            if (item is GunItem gun)
+            {
+                slot3Visual.sprite = item.itemSprite;
+                int max = gun.maxAmmoInMag;
+                int cur = itemObj3.curAmmoInMag;
+                slot3AmountText.text = $"{cur} / {max}";
+            }
+            else
+            {
+                int amount = itemObj3.itemObjData.amount;
+                if (amount > 1)
+                {
+                    slot3Visual.sprite = item.itemSprite;
+                    slot3AmountText.text = $"{amount}";
+                }
+                else
+                {
+                    slot3Visual.gameObject.SetActive(false);
+                    slot3AmountText.gameObject.SetActive(false);
+                }
+            }
         }
         else
         {
@@ -506,6 +637,7 @@ public class PlayerUI : Singleton<PlayerUI>
         {
             TryAddItemToInventory(testItem, 1);
         }
+
     }
 
 }

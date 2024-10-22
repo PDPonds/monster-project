@@ -86,6 +86,11 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
     bool canAttack = true;
     float curAttackDelay;
     int attackCount;
+    float curFireRateTime;
+    #endregion
+
+    #region Reload
+    float curReloadTime;
     #endregion
 
     private void Awake()
@@ -111,6 +116,8 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
 
         DecreaseAttackDelay();
         DecreaseDashDelay();
+
+        DecreaseReloadTime();
     }
 
     #region Mouse
@@ -544,11 +551,11 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
     {
         if (IsPhase(PlayerPhase.Normal))
         {
-            ItemObj item = GetCurSelectItem();
+            ItemObj itemObj = GetCurSelectItem();
 
-            if (item == null) return;
+            if (itemObj == null) return;
 
-            if (item.itemObjData.item is MeleeItem melee && canAttack)
+            if (itemObj.itemObjData.item is MeleeItem melee && canAttack)
             {
                 if (attackCount % 2 == 0) anim.Play("AttackCombo1");
                 else anim.Play("AttackCombo2");
@@ -559,11 +566,13 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
                 TryAutoLock(melee);
 
             }
-            else if (item.itemObjData.item is GunItem gun)
+            else if (itemObj.itemObjData.item is GunItem gun)
             {
-                if (isAim)
+                if (isAim && itemObj.HasAmmo(out int curAmmoInMag) && curReloadTime == 0)
                 {
-                    Debug.Log("Shoot");
+                    //Instance Bullet
+                    itemObj.UseAmmo();
+                    PlayerUI.Instance.UpdateInGameHandVisual();
                 }
             }
 
@@ -584,7 +593,7 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
 
             if (col.TryGetComponent<ICombatable>(out ICombatable combatable))
             {
-                combatable.TakeDamageFormMelee(1 , melee.knockbackForce);
+                combatable.TakeDamageFormMelee(1, melee.knockbackForce);
             }
 
         }
@@ -599,6 +608,77 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
 
         curAttackDelay = attackDelay;
         canAttack = false;
+    }
+
+    #endregion
+
+    #region Reload
+
+    public void TryReload()
+    {
+        ItemObj itemObj = GetCurSelectItem();
+
+        if (itemObj == null) return;
+
+        ItemSO curSelectedItem = itemObj.itemObjData.item;
+        if (curSelectedItem is GunItem gun && PlayerUI.Instance.HasItem(gun.ammoType, out ItemObj ammoObj) && itemObj.curAmmoInMag < gun.maxAmmoInMag)
+        {
+            PlayerUI.Instance.reloadImg.gameObject.SetActive(true);
+            curReloadTime = gun.reloadDuration;
+        }
+    }
+
+    void DecreaseReloadTime()
+    {
+        ItemObj itemObj = GetCurSelectItem();
+        if (itemObj != null)
+        {
+            ItemSO curSelectedItem = itemObj.itemObjData.item;
+            if (curSelectedItem is GunItem gun)
+            {
+                ItemSO ammoType = gun.ammoType;
+                int maxReloadCount = gun.maxAmmoInMag;
+                int curAmmoInMag = itemObj.curAmmoInMag;
+                int toAddCount = maxReloadCount - curAmmoInMag;
+
+                if (curReloadTime > 0)
+                {
+                    curReloadTime -= Time.deltaTime;
+
+                    float percent = curReloadTime / gun.reloadDuration;
+                    PlayerUI.Instance.reloadImg.fillAmount = percent;
+                    if (curReloadTime <= 0)
+                    {
+                        if (PlayerUI.Instance.HasItem(ammoType, out ItemObj ammoObj))
+                        {
+                            int curAmmoAmount = ammoObj.itemObjData.amount;
+                            if (curAmmoAmount > toAddCount)
+                            {
+                                itemObj.ReloadAmmo(maxReloadCount);
+                                PlayerUI.Instance.TryRemoveItem(ammoObj.itemObjData.item, toAddCount);
+                            }
+                            else
+                            {
+                                itemObj.ReloadAmmo(curAmmoAmount);
+                                PlayerUI.Instance.TryRemoveItem(ammoObj.itemObjData.item, curAmmoAmount);
+                            }
+                            PlayerUI.Instance.UpdateInGameHandVisual();
+                            PlayerUI.Instance.reloadImg.gameObject.SetActive(false);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                curReloadTime = 0;
+                PlayerUI.Instance.reloadImg.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            curReloadTime = 0;
+            PlayerUI.Instance.reloadImg.gameObject.SetActive(false);
+        }
     }
 
     #endregion

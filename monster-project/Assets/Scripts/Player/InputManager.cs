@@ -26,6 +26,8 @@ public class InputManager : MonoBehaviour
             input.action.Attack.performed += i => PlayerManager.Instance.Attack();
             input.action.Dash.performed += i => PlayerManager.Instance.DashPerformed();
 
+            input.action.Reload.performed += i => PlayerManager.Instance.TryReload();
+
         }
 
         input.Enable();

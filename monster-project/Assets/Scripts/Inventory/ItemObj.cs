@@ -16,6 +16,7 @@ public class ItemObj : MonoBehaviour
 
     bool isSelected;
 
+    public int curAmmoInMag;
 
     private void Awake()
     {
@@ -250,20 +251,26 @@ public class ItemObj : MonoBehaviour
     public void RemoveItemAmount()
     {
         itemObjData.amount--;
-        UpdateAmountText();
         if (itemObjData.amount <= 0)
         {
             DestroyItem();
+        }
+        else
+        {
+            UpdateAmountText();
         }
     }
 
     public void RemoveItemAmount(int count)
     {
         itemObjData.amount -= count;
-        UpdateAmountText();
         if (itemObjData.amount <= 0)
         {
             DestroyItem();
+        }
+        else
+        {
+            UpdateAmountText();
         }
     }
 
@@ -281,12 +288,81 @@ public class ItemObj : MonoBehaviour
     public void DestroyItem()
     {
         PlayerUI.Instance.curItemObjSelected = null;
+        if (transform.parent == PlayerUI.Instance.itemParent)
+        {
+            for (int i = 0; i < itemObjData.pressSlotsXY.Count; i++)
+            {
+                SlotUI slot = PlayerManager.Instance.GetInventorySlot(itemObjData.pressSlotsXY[i].x, itemObjData.pressSlotsXY[i].y, PlayerUI.Instance.slotParent);
+                slot.hasItem = false;
+            }
+        }
+        else if (transform.parent == PlayerUI.Instance.storageParent)
+        {
+            for (int i = 0; i < itemObjData.pressSlotsXY.Count; i++)
+            {
+                SlotUI slot = PlayerManager.Instance.GetStorageSlot(itemObjData.pressSlotsXY[i].x, itemObjData.pressSlotsXY[i].y, PlayerUI.Instance.storageSlot);
+                slot.hasItem = false;
+            }
+        }
+
         Destroy(gameObject);
     }
 
     public void UpdateAmountText()
     {
         amountText.text = $"{itemObjData.amount} / {itemObjData.item.maxStack}";
+    }
+
+    public bool isGun(out GunItem gun)
+    {
+        if (itemObjData.item is GunItem gunItem)
+        {
+            gun = gunItem;
+            return true;
+        }
+
+        gun = null;
+        return false;
+    }
+
+    public bool isGun()
+    {
+        return itemObjData.item is GunItem;
+    }
+
+    public bool HasAmmo(out int curAmmoCount)
+    {
+        if (isGun() && curAmmoInMag > 0)
+        {
+            curAmmoCount = curAmmoInMag;
+            return true;
+        }
+
+        curAmmoCount = 0;
+        return false;
+    }
+
+    public void UseAmmo()
+    {
+        if (curAmmoInMag <= 0 || !isGun()) return;
+
+        curAmmoInMag--;
+        if (curAmmoInMag <= 0)
+        {
+            curAmmoInMag = 0;
+        }
+    }
+
+    public void ReloadAmmo(int amount)
+    {
+        if (isGun(out GunItem gun))
+        {
+            curAmmoInMag += amount;
+            if (curAmmoInMag > gun.maxAmmoInMag)
+            {
+                curAmmoInMag = gun.maxAmmoInMag;
+            }
+        }
     }
 
 }

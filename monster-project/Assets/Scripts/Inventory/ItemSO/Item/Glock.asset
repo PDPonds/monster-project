@@ -25,8 +25,13 @@ MonoBehaviour:
   spawnRightPos: {x: 0, y: 0, z: 0}
   rotationRight: {x: 0, y: 0, z: 0}
   usableItemType: 0
+  damage: 1
   weaponType: 0
+  bulletPrefab: {fileID: 8580445744529802140, guid: 821f784b9d9cf2e41a23a58be5636af9,
+    type: 3}
+  bulletSpeed: 10
   fireRate: 0.25
   ammoType: {fileID: 11400000, guid: ad2d0321578082d4cbed211384720a56, type: 2}
   maxAmmoInMag: 12
   reloadDuration: 3
+  bulletDuration: 3

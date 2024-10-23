@@ -9,6 +9,8 @@ public enum WeaponType
 
 public class WeaponItem : UseableItem
 {
+    public int damage;
+
     public WeaponType weaponType;
 
     public WeaponItem()

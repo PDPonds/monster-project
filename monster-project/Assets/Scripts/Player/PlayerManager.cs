@@ -86,6 +86,8 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
     bool canAttack = true;
     float curAttackDelay;
     int attackCount;
+    [Header("- Gun")]
+    [SerializeField] Transform bulletSpawnPoint;
     float curFireRateTime;
     #endregion
 
@@ -115,6 +117,8 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
         UpdatePhase();
 
         DecreaseAttackDelay();
+        DecreaseFireRate();
+
         DecreaseDashDelay();
 
         DecreaseReloadTime();
@@ -568,14 +572,27 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
             }
             else if (itemObj.itemObjData.item is GunItem gun)
             {
-                if (isAim && itemObj.HasAmmo(out int curAmmoInMag) && curReloadTime == 0)
+                if (isAim && itemObj.HasAmmo(out int curAmmoInMag) && curReloadTime == 0 && curFireRateTime == 0)
                 {
-                    //Instance Bullet
+                    InitBullet(gun);
                     itemObj.UseAmmo();
                     PlayerUI.Instance.UpdateInGameHandVisual();
+                    curFireRateTime = gun.fireRate;
                 }
             }
 
+        }
+    }
+
+    void DecreaseFireRate()
+    {
+        if (curFireRateTime > 0)
+        {
+            curFireRateTime -= Time.deltaTime;
+            if (curFireRateTime <= 0)
+            {
+                curFireRateTime = 0;
+            }
         }
     }
 
@@ -593,7 +610,7 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
 
             if (col.TryGetComponent<ICombatable>(out ICombatable combatable))
             {
-                combatable.TakeDamageFormMelee(1, melee.knockbackForce);
+                combatable.TakeDamageFormMelee(melee.damage, melee.knockbackForce);
             }
 
         }
@@ -608,6 +625,13 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
 
         curAttackDelay = attackDelay;
         canAttack = false;
+    }
+
+    void InitBullet(GunItem gun)
+    {
+        GameObject obj = Instantiate(gun.bulletPrefab, bulletSpawnPoint.position, Quaternion.identity);
+        Bullet bullet = obj.GetComponent<Bullet>();
+        bullet.SetupBullet(transform.forward, gun.bulletSpeed, gun.damage, gun.bulletDuration);
     }
 
     #endregion
@@ -665,6 +689,7 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
                             PlayerUI.Instance.UpdateInGameHandVisual();
                             PlayerUI.Instance.reloadImg.gameObject.SetActive(false);
                         }
+                        curReloadTime = 0;
                     }
                 }
             }

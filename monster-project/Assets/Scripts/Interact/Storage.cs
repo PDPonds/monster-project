@@ -8,6 +8,8 @@ public class Storage : MonoBehaviour, IInteracable
     public int storageHeight;
     [HideInInspector] public List<ItemObjData> storageDatas = new List<ItemObjData>();
 
+    bool firstTime = true;
+
     public void Interact()
     {
         if (PlayerManager.Instance.IsPhase(PlayerPhase.Normal))
@@ -15,7 +17,16 @@ public class Storage : MonoBehaviour, IInteracable
             PlayerManager.Instance.curStorage = this;
             PlayerUI.Instance.ShowStorage(storageWidth, storageHeight);
             PlayerUI.Instance.inGameHandVisualParent.gameObject.SetActive(false);
-            InitItemInStorage();
+
+            if (firstTime)
+            {
+                TryAddItemToStorage(PlayerUI.Instance.testItem, 1);
+                firstTime = false;
+            }
+            else
+            {
+                InitItemInStorage();
+            }
         }
     }
 

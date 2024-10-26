@@ -29,7 +29,7 @@ public class ItemObj : MonoBehaviour
 
     private void Update()
     {
-        if (isSelected)
+        if (isSelected && !PlayerUI.Instance.confirmToDestroyBG.gameObject.activeSelf)
         {
             transform.position = PlayerManager.Instance.mousePos;
         }

@@ -54,6 +54,15 @@ public class PlayerUI : Singleton<PlayerUI>
     [SerializeField] Transform leftHandParent;
     [SerializeField] Transform rightHandParent;
 
+    [Header("===== Bin =====")]
+    [SerializeField] Transform binSlot;
+    public Transform confirmToDestroyBG;
+    [SerializeField] Image confirmItemIcon;
+    [SerializeField] TextMeshProUGUI confirmItemName;
+    [SerializeField] Button confirmDestroyButton;
+    [SerializeField] Button cancleDestroyButton;
+    ItemObj curSelectDestroyItemObj;
+
     [HideInInspector] public GameObject curItemObjSelected;
 
     [Header("===== Reload =====")]
@@ -429,6 +438,11 @@ public class PlayerUI : Singleton<PlayerUI>
             }
         }
 
+        float offset = PlayerManager.Instance.inventoryWidth * 90;
+        RectTransform binRect = binSlot.GetComponent<RectTransform>();
+        Vector3 binPos = binRect.localPosition + new Vector3(offset + slot0Pos.x, slot0Pos.y, 0);
+        binRect.anchoredPosition = binPos;
+
         if (equipmentSlots.Count > 0)
         {
             for (int i = 0; i < equipmentSlots.Count; i++)
@@ -578,6 +592,22 @@ public class PlayerUI : Singleton<PlayerUI>
 
     #endregion
 
+    #region DestroyItemInInventory
+    public void ShowConfirmToDestroy(ItemObj itemObj)
+    {
+        confirmToDestroyBG.gameObject.SetActive(true);
+        confirmItemName.text = itemObj.itemObjData.item.itemName;
+        confirmItemIcon.sprite = itemObj.itemObjData.item.itemSprite;
+        curSelectDestroyItemObj = itemObj;
+    }
+
+    public void HideConfirmToDestroy()
+    {
+        curSelectDestroyItemObj = null;
+        confirmToDestroyBG.gameObject.SetActive(false);
+    }
+    #endregion
+
     public void SelectItemInHand(int index)
     {
         if (PlayerManager.Instance.IsPhase(PlayerPhase.UIShow)) return;
@@ -651,6 +681,20 @@ public class PlayerUI : Singleton<PlayerUI>
                 Destroy(rightHandParent.GetChild(i).gameObject);
             }
         }
+    }
+
+    private void Awake()
+    {
+        confirmDestroyButton.onClick.AddListener(() =>
+        {
+            if (curSelectDestroyItemObj != null)
+            {
+                curSelectDestroyItemObj.DestroyItem();
+                HideConfirmToDestroy();
+            }
+        });
+
+        cancleDestroyButton.onClick.AddListener(HideConfirmToDestroy);
     }
 
     private void Update()

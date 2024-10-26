@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,9 +20,20 @@ public class InputManager : MonoBehaviour
             input.action.RotateOnSelect.performed += i => PlayerUI.Instance.RotateSelectedObject();
             input.action.Interact.performed += i => PlayerManager.Instance.InteractClick();
 
-            input.action.HandSlot1.performed += i => PlayerUI.Instance.SelectItemInHand(1);
-            input.action.HandSlot2.performed += i => PlayerUI.Instance.SelectItemInHand(2);
-            input.action.HandSlot3.performed += i => PlayerUI.Instance.SelectItemInHand(3);
+            input.action.HandSlot1.performed += i =>
+            {
+                if (PlayerManager.Instance.curSelectSlotIndex != 1) PlayerUI.Instance.SelectItemInHand(1);
+            };
+
+            input.action.HandSlot2.performed += i =>
+            {
+                if (PlayerManager.Instance.curSelectSlotIndex != 2) PlayerUI.Instance.SelectItemInHand(2);
+            };
+
+            input.action.HandSlot3.performed += i =>
+            {
+                if (PlayerManager.Instance.curSelectSlotIndex != 3) PlayerUI.Instance.SelectItemInHand(3);
+            };
 
             input.action.Attack.performed += i => PlayerManager.Instance.Attack();
             input.action.Dash.performed += i => PlayerManager.Instance.DashPerformed();

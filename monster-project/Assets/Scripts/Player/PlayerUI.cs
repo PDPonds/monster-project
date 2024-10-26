@@ -139,6 +139,8 @@ public class PlayerUI : Singleton<PlayerUI>
         }
         else
         {
+            ClearItemOnHand();
+            PlayerManager.Instance.isAim = false;
             inventoryTab.gameObject.SetActive(true);
             inGameHandVisualParent.gameObject.SetActive(false);
             PlayerManager.Instance.SwitchPhase(PlayerPhase.UIShow);
@@ -295,7 +297,7 @@ public class PlayerUI : Singleton<PlayerUI>
             Transform slot = handSlots[i].transform;
             if (slot.transform.childCount > 0)
             {
-                ItemObj item = slot.GetChild(i).GetComponent<ItemObj>();
+                ItemObj item = slot.GetChild(0).GetComponent<ItemObj>();
                 items.Add(item);
             }
         }
@@ -305,7 +307,7 @@ public class PlayerUI : Singleton<PlayerUI>
             Transform slot = equipmentSlots[i].transform;
             if (slot.transform.childCount > 0)
             {
-                ItemObj item = slot.GetChild(i).GetComponent<ItemObj>();
+                ItemObj item = slot.GetChild(0).GetComponent<ItemObj>();
                 items.Add(item);
             }
         }
@@ -578,6 +580,8 @@ public class PlayerUI : Singleton<PlayerUI>
 
     public void SelectItemInHand(int index)
     {
+        if (PlayerManager.Instance.IsPhase(PlayerPhase.UIShow)) return;
+
         if (index < 1 || index > 3) return;
 
         if (leftHandParent.childCount > 0) for (int i = 0; i < leftHandParent.childCount; i++) { Destroy(leftHandParent.GetChild(i).gameObject); }
@@ -599,6 +603,10 @@ public class PlayerUI : Singleton<PlayerUI>
         {
             UseableItem useableItem = item.itemObjData.item as UseableItem;
             InitItemOnHand(useableItem);
+            if (item.itemObjData.item is GunItem gun && item.curAmmoInMag == 0)
+            {
+                PlayerManager.Instance.TryReload();
+            }
         }
 
     }
@@ -626,9 +634,23 @@ public class PlayerUI : Singleton<PlayerUI>
 
     }
 
-    private void Start()
+    void ClearItemOnHand()
     {
-        SelectItemInHand(1);
+        if (leftHandParent.childCount > 0)
+        {
+            for (int i = 0; i < leftHandParent.childCount; i++)
+            {
+                Destroy(leftHandParent.GetChild(i).gameObject);
+            }
+        }
+
+        if (rightHandParent.childCount > 0)
+        {
+            for (int i = 0; i < rightHandParent.childCount; i++)
+            {
+                Destroy(rightHandParent.GetChild(i).gameObject);
+            }
+        }
     }
 
     private void Update()

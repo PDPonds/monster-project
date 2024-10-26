@@ -578,6 +578,10 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
                     itemObj.UseAmmo();
                     PlayerUI.Instance.UpdateInGameHandVisual();
                     curFireRateTime = gun.fireRate;
+                    if (itemObj.curAmmoInMag == 0)
+                    {
+                        TryReload();
+                    }
                 }
             }
 

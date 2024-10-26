@@ -44,8 +44,17 @@ public class ItemObj : MonoBehaviour
             {
                 if (itemObjData.amount < itemObjData.item.maxStack)
                 {
-                    AddItemAmount();
-                    itemObj.RemoveItemAmount();
+                    int toAdd = itemObjData.item.maxStack - itemObjData.amount;
+                    if (itemObj.itemObjData.amount < toAdd)
+                    {
+                        AddItemAmount(itemObj.itemObjData.amount);
+                        itemObj.RemoveItemAmount(itemObj.itemObjData.amount);
+                    }
+                    else
+                    {
+                        AddItemAmount(toAdd);
+                        itemObj.RemoveItemAmount(toAdd);
+                    }
                 }
             }
         }

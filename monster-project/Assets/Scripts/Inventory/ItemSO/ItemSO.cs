@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,9 @@ public class ItemSO : ScriptableObject
     [Header("- Slot")]
     public int maxStack;
 
+    [Header("- Crafting")]
+    public List<CraftSlot> craftingComponents = new List<CraftSlot>();
+
     public ItemType itemType;
 
     public int GetSlotSize()
@@ -28,4 +32,11 @@ public class ItemSO : ScriptableObject
         return itemGridWidth * itemGridHeight;
     }
 
+}
+
+[Serializable]
+public class CraftSlot
+{
+    public ItemSO item;
+    public int amount;
 }

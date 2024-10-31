@@ -17,6 +17,9 @@ MonoBehaviour:
   itemGridWidth: 3
   itemGridHeight: 2
   maxStack: 1
+  craftingComponents:
+  - item: {fileID: 11400000, guid: ad2d0321578082d4cbed211384720a56, type: 2}
+    amount: 2
   itemType: 0
   holdingSide: 0
   prefab: {fileID: 2368437685853480236, guid: c77f90ac77430f94cb8198270feec38e, type: 3}

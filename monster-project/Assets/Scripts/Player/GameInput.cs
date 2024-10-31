@@ -134,6 +134,15 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PauseAndCloseUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""50502bf9-e0f7-4fc7-9bde-5d51ac426fba"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -323,6 +332,17 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b993336-f2ec-4eb3-a935-9165f6239f2f"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PauseAndCloseUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -343,6 +363,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_action_HandSlot1 = m_action.FindAction("HandSlot1", throwIfNotFound: true);
         m_action_HandSlot2 = m_action.FindAction("HandSlot2", throwIfNotFound: true);
         m_action_HandSlot3 = m_action.FindAction("HandSlot3", throwIfNotFound: true);
+        m_action_PauseAndCloseUI = m_action.FindAction("PauseAndCloseUI", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -416,6 +437,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_action_HandSlot1;
     private readonly InputAction m_action_HandSlot2;
     private readonly InputAction m_action_HandSlot3;
+    private readonly InputAction m_action_PauseAndCloseUI;
     public struct ActionActions
     {
         private @GameInput m_Wrapper;
@@ -432,6 +454,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @HandSlot1 => m_Wrapper.m_action_HandSlot1;
         public InputAction @HandSlot2 => m_Wrapper.m_action_HandSlot2;
         public InputAction @HandSlot3 => m_Wrapper.m_action_HandSlot3;
+        public InputAction @PauseAndCloseUI => m_Wrapper.m_action_PauseAndCloseUI;
         public InputActionMap Get() { return m_Wrapper.m_action; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -477,6 +500,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @HandSlot3.started += instance.OnHandSlot3;
             @HandSlot3.performed += instance.OnHandSlot3;
             @HandSlot3.canceled += instance.OnHandSlot3;
+            @PauseAndCloseUI.started += instance.OnPauseAndCloseUI;
+            @PauseAndCloseUI.performed += instance.OnPauseAndCloseUI;
+            @PauseAndCloseUI.canceled += instance.OnPauseAndCloseUI;
         }
 
         private void UnregisterCallbacks(IActionActions instance)
@@ -517,6 +543,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @HandSlot3.started -= instance.OnHandSlot3;
             @HandSlot3.performed -= instance.OnHandSlot3;
             @HandSlot3.canceled -= instance.OnHandSlot3;
+            @PauseAndCloseUI.started -= instance.OnPauseAndCloseUI;
+            @PauseAndCloseUI.performed -= instance.OnPauseAndCloseUI;
+            @PauseAndCloseUI.canceled -= instance.OnPauseAndCloseUI;
         }
 
         public void RemoveCallbacks(IActionActions instance)
@@ -548,5 +577,6 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnHandSlot1(InputAction.CallbackContext context);
         void OnHandSlot2(InputAction.CallbackContext context);
         void OnHandSlot3(InputAction.CallbackContext context);
+        void OnPauseAndCloseUI(InputAction.CallbackContext context);
     }
 }

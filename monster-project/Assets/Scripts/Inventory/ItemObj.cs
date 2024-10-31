@@ -319,7 +319,15 @@ public class ItemObj : MonoBehaviour
 
     public void UpdateAmountText()
     {
-        amountText.text = $"{itemObjData.amount} / {itemObjData.item.maxStack}";
+        if (itemObjData.item.maxStack > 1)
+        {
+            amountText.gameObject.SetActive(true);
+            amountText.text = $"{itemObjData.amount} / {itemObjData.item.maxStack}";
+        }
+        else
+        {
+            amountText.gameObject.SetActive(false);
+        }
     }
 
     public bool isGun(out GunItem gun)

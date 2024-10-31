@@ -68,6 +68,14 @@ public class PlayerUI : Singleton<PlayerUI>
     [Header("===== Reload =====")]
     public Image reloadImg;
 
+    [Header("===== Craft =====")]
+    [SerializeField] Transform craftingPanel;
+    [SerializeField] Transform craftingItemParent;
+    [SerializeField] GameObject craftingItemObj;
+    [Header("- Crafting Component")]
+    [SerializeField] Image componentParent;
+    [SerializeField] GameObject componentUIObj;
+
     [Header("===== Test =====")]
     public ItemSO testItem;
 
@@ -133,24 +141,16 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         if (inventoryTab.gameObject.activeSelf)
         {
-            if (curItemObjSelected == null)
-            {
-                if (PlayerManager.Instance.curStorage != null) PlayerManager.Instance.curStorage.UpdateStorageData();
+            HideInventoryPanel();
 
-                inventoryTab.gameObject.SetActive(false);
-                HideStorage();
-                PlayerManager.Instance.SwitchPhase(PlayerPhase.Normal);
-
-                inGameHandVisualParent.gameObject.SetActive(true);
-                UpdateInGameHandVisual();
-                SelectItemInHand(PlayerManager.Instance.curSelectSlotIndex);
-            }
         }
         else
         {
             ClearItemOnHand();
             PlayerManager.Instance.isAim = false;
             inventoryTab.gameObject.SetActive(true);
+            storageParent.gameObject.SetActive(false);
+            craftingPanel.gameObject.SetActive(false);
             inGameHandVisualParent.gameObject.SetActive(false);
             PlayerManager.Instance.SwitchPhase(PlayerPhase.UIShow);
         }
@@ -608,6 +608,24 @@ public class PlayerUI : Singleton<PlayerUI>
     }
     #endregion
 
+    void HideInventoryPanel()
+    {
+        if (curItemObjSelected == null)
+        {
+            if (PlayerManager.Instance.curStorage != null) PlayerManager.Instance.curStorage.UpdateStorageData();
+
+            inventoryTab.gameObject.SetActive(false);
+            HideStorage();
+            HideCraftingPanel();
+
+            inGameHandVisualParent.gameObject.SetActive(true);
+            UpdateInGameHandVisual();
+            SelectItemInHand(PlayerManager.Instance.curSelectSlotIndex);
+
+            PlayerManager.Instance.SwitchPhase(PlayerPhase.Normal);
+        }
+    }
+
     public void SelectItemInHand(int index)
     {
         if (PlayerManager.Instance.IsPhase(PlayerPhase.UIShow)) return;
@@ -683,6 +701,165 @@ public class PlayerUI : Singleton<PlayerUI>
         }
     }
 
+    #region EscapeButton
+
+    public void EscapePerformed()
+    {
+        if (inventoryTab.gameObject.activeSelf)
+        {
+            HideInventoryPanel();
+        }
+        else
+        {
+            Debug.Log("Pause");
+        }
+    }
+
+    #endregion
+
+    #region Crafting
+
+    public void ShowCraftingPanel()
+    {
+        inventoryTab.gameObject.SetActive(true);
+        craftingPanel.gameObject.SetActive(true);
+        GenerateCraftingItemObj();
+        PlayerManager.Instance.SwitchPhase(PlayerPhase.UIShow);
+    }
+
+    public void HideCraftingPanel()
+    {
+        craftingPanel.gameObject.SetActive(false);
+    }
+
+    void ClearCraftingItemParent()
+    {
+        if (craftingItemParent.childCount > 0)
+        {
+            for (int i = 0; i < craftingItemParent.childCount; i++)
+            {
+                Destroy(craftingItemParent.GetChild(i).gameObject);
+            }
+        }
+    }
+
+    void GenerateCraftingItemObj()
+    {
+        ClearCraftingItemParent();
+        List<ItemSO> canCraftItem = GetCanCraftItem();
+        if (canCraftItem.Count > 0)
+        {
+            for (int i = 0; i < canCraftItem.Count; i++)
+            {
+                ItemSO item = canCraftItem[i];
+                GameObject obj = Instantiate(craftingItemObj, craftingItemParent);
+                CraftItemObj craftItemObj = obj.GetComponent<CraftItemObj>();
+                craftItemObj.Setup(item);
+            }
+        }
+    }
+
+    List<ItemSO> GetCanCraftItem()
+    {
+        List<ItemSO> canCraftItem = new List<ItemSO>();
+        List<ItemObj> allItemInInventory = GetItemInInventory();
+        if (allItemInInventory.Count > 0)
+        {
+            for (int i = 0; i < allItemInInventory.Count; i++)
+            {
+                ItemObj curItemObj = allItemInInventory[i];
+                ItemSO curItem = curItemObj.itemObjData.item;
+                List<ItemSO> craftableItem = GameManager.Instance.allItemInGame.GetCanCraftItem(curItem);
+                if (craftableItem.Count > 0)
+                {
+                    for (int j = 0; j < craftableItem.Count; j++)
+                    {
+                        ItemSO curCraftItem = craftableItem[j];
+                        if (!HasItemInList(curCraftItem, canCraftItem))
+                        {
+                            canCraftItem.Add(curCraftItem);
+                        }
+                    }
+                }
+            }
+        }
+        return canCraftItem;
+    }
+
+    bool HasItemInList(ItemSO item, List<ItemSO> allItems)
+    {
+        if (allItems.Count > 0)
+        {
+            for (int i = 0; i < allItems.Count; i++)
+            {
+                if (allItems[i] == item)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void GenerateComponentItem(ItemSO item)
+    {
+        componentParent.gameObject.SetActive(true);
+        ClearComponentItemParent();
+        if (item != null && item.craftingComponents.Count > 0)
+        {
+            for (int i = 0; i < item.craftingComponents.Count; i++)
+            {
+                ItemSO curComponent = item.craftingComponents[i].item;
+                int curComponentAmount = item.craftingComponents[i].amount;
+                int curItemInInventoryCount = 0;
+                if (HasItem(curComponent, out ItemObj itemObj)) curItemInInventoryCount = itemObj.itemObjData.amount;
+                GameObject obj = Instantiate(componentUIObj, componentParent.transform);
+                Image componentSprite = obj.transform.GetChild(0).GetComponent<Image>();
+                TextMeshProUGUI componentName = obj.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                float rectWidth = 1f;
+                float rectHeight = 1f;
+                if (curComponent.itemGridWidth >= curComponent.itemGridHeight)
+                {
+                    rectWidth = (float)curComponent.itemGridWidth / (float)curComponent.itemGridHeight;
+                    rectHeight = (float)curComponent.itemGridHeight / (float)curComponent.itemGridHeight;
+                }
+                else
+                {
+                    rectWidth = (float)curComponent.itemGridWidth / (float)curComponent.itemGridWidth;
+                    rectHeight = (float)curComponent.itemGridHeight / (float)curComponent.itemGridWidth;
+                }
+                componentSprite.rectTransform.sizeDelta = new Vector2(rectWidth * 30f, rectHeight * 30f);
+                componentSprite.sprite = curComponent.itemSprite;
+                string name = string.Empty;
+                name += curComponent.itemName;
+                name += "     ";
+                name += $"{curItemInInventoryCount} / {curComponentAmount}";
+                componentName.text = name;
+                if (curItemInInventoryCount >= curComponentAmount) componentName.color = Color.green;
+                else componentName.color = Color.red;
+            }
+        }
+
+    }
+
+    public void HideCraftingComponent()
+    {
+        componentParent.gameObject.SetActive(false);
+    }
+
+    void ClearComponentItemParent()
+    {
+        if (componentParent.transform.childCount > 0)
+        {
+            for (int i = 0; i < componentParent.transform.childCount; i++)
+            {
+                Destroy(componentParent.transform.GetChild(i).gameObject);
+            }
+        }
+    }
+
+    #endregion
+
     private void Awake()
     {
         confirmDestroyButton.onClick.AddListener(() =>
@@ -693,7 +870,6 @@ public class PlayerUI : Singleton<PlayerUI>
                 HideConfirmToDestroy();
             }
         });
-
         cancleDestroyButton.onClick.AddListener(HideConfirmToDestroy);
     }
 

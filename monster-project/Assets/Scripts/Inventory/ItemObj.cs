@@ -264,10 +264,7 @@ public class ItemObj : MonoBehaviour
         {
             DestroyItem();
         }
-        else
-        {
-            UpdateAmountText();
-        }
+        UpdateAmountText();
     }
 
     public void RemoveItemAmount(int count)
@@ -277,10 +274,7 @@ public class ItemObj : MonoBehaviour
         {
             DestroyItem();
         }
-        else
-        {
-            UpdateAmountText();
-        }
+        UpdateAmountText();
     }
 
     public int GetHalfAmount()
@@ -305,6 +299,21 @@ public class ItemObj : MonoBehaviour
                 slot.hasItem = false;
             }
         }
+        else if (transform.parent == PlayerUI.Instance.handSlots[0])
+        {
+            EquipmentSlotUI eq = PlayerUI.Instance.handSlots[0].GetComponent<EquipmentSlotUI>();
+            eq.hasItem = false;
+        }
+        else if (transform.parent == PlayerUI.Instance.handSlots[1])
+        {
+            EquipmentSlotUI eq = PlayerUI.Instance.handSlots[1].GetComponent<EquipmentSlotUI>();
+            eq.hasItem = false;
+        }
+        else if (transform.parent == PlayerUI.Instance.handSlots[2])
+        {
+            EquipmentSlotUI eq = PlayerUI.Instance.handSlots[2].GetComponent<EquipmentSlotUI>();
+            eq.hasItem = false;
+        }
         else if (transform.parent == PlayerUI.Instance.storageParent)
         {
             for (int i = 0; i < itemObjData.pressSlotsXY.Count; i++)
@@ -313,6 +322,7 @@ public class ItemObj : MonoBehaviour
                 slot.hasItem = false;
             }
         }
+
 
         Destroy(gameObject);
     }

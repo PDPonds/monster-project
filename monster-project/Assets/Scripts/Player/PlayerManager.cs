@@ -683,12 +683,12 @@ public class PlayerManager : Singleton<PlayerManager>, ICombatable
                             if (curAmmoAmount > toAddCount)
                             {
                                 itemObj.ReloadAmmo(maxReloadCount);
-                                PlayerUI.Instance.TryRemoveItem(ammoObj.itemObjData.item, toAddCount);
+                                PlayerUI.Instance.RemoveItem(ammoObj.itemObjData.item, toAddCount);
                             }
                             else
                             {
                                 itemObj.ReloadAmmo(curAmmoAmount);
-                                PlayerUI.Instance.TryRemoveItem(ammoObj.itemObjData.item, curAmmoAmount);
+                                PlayerUI.Instance.RemoveItem(ammoObj.itemObjData.item, curAmmoAmount);
                             }
                             PlayerUI.Instance.UpdateInGameHandVisual();
                             PlayerUI.Instance.reloadImg.gameObject.SetActive(false);

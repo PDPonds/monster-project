@@ -1,10 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class PlayerUI : Singleton<PlayerUI>
 {
@@ -171,16 +169,17 @@ public class PlayerUI : Singleton<PlayerUI>
 
     public bool TryAddItemToInventory(ItemSO item, int amount)
     {
-        GameObject obj = InitItemObj(item, amount);
-        ItemObj itemObj = obj.GetComponent<ItemObj>();
-
         if (HasNotFullAmountItem(item, out int hasAmount, out int itemIndex))
         {
             List<ItemObj> items = GetItemInInventory();
             items[itemIndex].AddItemAmount(amount);
+            return true;
         }
         else
         {
+            GameObject obj = InitItemObj(item, amount);
+            ItemObj itemObj = obj.GetComponent<ItemObj>();
+
             for (int x = 0; x < PlayerManager.Instance.inventoryWidth; x++)
             {
                 for (int y = 0; y < PlayerManager.Instance.inventoryHeight; y++)
@@ -208,19 +207,19 @@ public class PlayerUI : Singleton<PlayerUI>
                     }
                 }
             }
-        }
 
-        Destroy(obj);
-        return false;
+            Destroy(obj);
+            return false;
+        }
 
     }
 
-    public void TryRemoveItem(ItemSO item, int amount)
+    public void RemoveItem(ItemSO item, int amount)
     {
         if (!HasItemCountForRemove(item, amount)) return;
 
         List<ItemObj> allItems = GetItemInInventory();
-        if (allItems.Count == 0 || allItems == null) return;
+        if (allItems.Count == 0 || allItems == null || allItems.Count == 0) return;
 
         int removeAmount = amount;
 
@@ -354,6 +353,28 @@ public class PlayerUI : Singleton<PlayerUI>
 
         itemObj = null;
         return false;
+    }
+
+    public bool HasItem(ItemSO item, out List<ItemObj> items, out int count)
+    {
+        items = new List<ItemObj>();
+        int amount = 0;
+        List<ItemObj> allItems = GetItemInInventory();
+        if (allItems.Count > 0)
+        {
+            for (int i = 0; i < allItems.Count; i++)
+            {
+                ItemObjData data = allItems[i].itemObjData;
+                if (item == data.item)
+                {
+                    items.Add(allItems[i]);
+                    amount += data.amount;
+                }
+            }
+        }
+
+        count = amount;
+        return items.Count > 0 && amount > 0;
     }
 
     public bool HasItem(int handIndex, out ItemObj itemObj)
@@ -743,7 +764,7 @@ public class PlayerUI : Singleton<PlayerUI>
         }
     }
 
-    void GenerateCraftingItemObj()
+    public void GenerateCraftingItemObj()
     {
         ClearCraftingItemParent();
         List<ItemSO> canCraftItem = GetCanCraftItem();
@@ -812,7 +833,7 @@ public class PlayerUI : Singleton<PlayerUI>
                 ItemSO curComponent = item.craftingComponents[i].item;
                 int curComponentAmount = item.craftingComponents[i].amount;
                 int curItemInInventoryCount = 0;
-                if (HasItem(curComponent, out ItemObj itemObj)) curItemInInventoryCount = itemObj.itemObjData.amount;
+                if (HasItem(curComponent, out List<ItemObj> itemObj, out int count)) curItemInInventoryCount = count;
                 GameObject obj = Instantiate(componentUIObj, componentParent.transform);
                 Image componentSprite = obj.transform.GetChild(0).GetComponent<Image>();
                 TextMeshProUGUI componentName = obj.transform.GetChild(1).GetComponent<TextMeshProUGUI>();

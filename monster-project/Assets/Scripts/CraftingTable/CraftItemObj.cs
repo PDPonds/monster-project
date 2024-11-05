@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -52,9 +53,31 @@ public class CraftItemObj : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
             holdingFill.fillAmount = percent;
             if (curHoldTime >= 2f)
             {
-                Debug.Log("Craft");
+                TryCraft();
+                curHoldTime = 0;
+                isHold = false;
             }
         }
+    }
+
+    void TryCraft()
+    {
+        if (item != null && item.craftingComponents.Count > 0 && PlayerUI.Instance.curItemObjSelected == null)
+        {
+            bool addItemSuccess = PlayerUI.Instance.TryAddItemToInventory(item, 1);
+            if (addItemSuccess)
+            {
+                for (int i = 0; i < item.craftingComponents.Count; i++)
+                {
+                    ItemSO curComponent = item.craftingComponents[i].item;
+                    int componentAmount = item.craftingComponents[i].amount;
+                    PlayerUI.Instance.RemoveItem(curComponent, componentAmount);
+                }
+            }
+            PlayerUI.Instance.GenerateCraftingItemObj();
+
+        }
+
     }
 
     public void Setup(ItemSO item)
@@ -118,7 +141,7 @@ public class CraftItemObj : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
             {
                 ItemSO componentItem = craftComponents[j].item;
                 int componentCount = craftComponents[j].amount;
-                if (PlayerUI.Instance.HasItem(componentItem, out ItemObj itemObj) && itemObj.itemObjData.amount >= componentCount)
+                if (PlayerUI.Instance.HasItem(componentItem, out List<ItemObj> itemObj, out int count) && count >= componentCount)
                 {
                     hasCount++;
                 }
